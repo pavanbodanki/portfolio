@@ -34,9 +34,8 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4  # Updated to v4
       - name: Upload artifact
-        uses: actions/upload-artifact@v4  # Fixed the deprecated version
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: github-pages
           path: '.'  # Uploads all repository content
       - name: Deploy to GitHub Pages
         id: deployment
