@@ -14,163 +14,359 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Daily — Pavan Bodanki</title>
     <meta name="description" content="Pavan Bodanki reads something about AI every day and posts his take.">
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
-    <link rel="stylesheet" href="../theme.css">
     <style>
-        .container { max-width: 880px; margin-top: 30px; margin-bottom: 60px; }
-        .topbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
-        .topbar a {
-            font-family: 'Space Grotesk', sans-serif; padding: 6px 16px; border-radius: 999px;
-            border: 1px solid var(--glass-border); background: var(--glass); backdrop-filter: blur(12px);
+        :root {
+            --ink: #242424;
+            --muted: #6b6b6b;
+            --line: #f2f2f2;
+            --line-2: #e6e6e6;
+            --accent: #0a66c2; /* LinkedIn blue */
+            --accent-dark: #004182;
+            --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --serif: 'Source Serif 4', Charter, 'Bitstream Charter', Georgia, serif;
         }
-        .blog-hero h1 {
-            font-size: clamp(2.4rem, 6vw, 3.6rem); background: var(--grad); background-size: 200% auto;
-            -webkit-background-clip: text; background-clip: text; color: transparent; animation: shimmer 6s linear infinite;
-            margin: 0.4em 0 0.1em;
+
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { margin: 0; background: #fff; color: var(--ink); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+        a { color: inherit; text-decoration: none; }
+        img { display: block; }
+
+        /* ---------- Top bar ---------- */
+        .topbar {
+            position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,.96); backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--line);
         }
-        .blog-hero .lead { color: var(--muted); }
-        .kicker { font-family: 'JetBrains Mono', monospace; color: var(--cyan); font-size: 0.85rem; letter-spacing: 0.08em; }
-        .post-card {
-            display: block; color: inherit; text-decoration: none !important; padding: 24px 28px; margin: 20px 0;
-            background: var(--glass); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-            border: 1px solid var(--glass-border); border-radius: 20px; position: relative; overflow: hidden;
-            transition: transform .3s, box-shadow .3s, border-color .3s;
+        .topbar-inner { max-width: 1192px; margin: 0 auto; padding: 0 24px; height: 57px; display: flex; align-items: center; justify-content: space-between; }
+        .logo { font-family: var(--serif); font-weight: 600; font-size: 1.6rem; letter-spacing: -0.03em; }
+        .logo span { color: var(--accent); }
+        .topbar nav { display: flex; align-items: center; gap: 22px; font-size: 0.9rem; color: var(--muted); }
+        .topbar nav a:hover { color: var(--ink); }
+        .btn {
+            display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 7px 16px; font-size: 0.875rem;
+            font-weight: 600; border: 1px solid var(--accent); color: var(--accent); background: #fff; cursor: pointer; font-family: var(--sans);
+            transition: background .15s, color .15s;
         }
-        .post-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: var(--grad); opacity: .7; }
-        .post-card:hover { transform: translateY(-4px); border-color: rgba(34,211,238,.45); box-shadow: var(--glow); color: inherit; text-shadow: none; }
-        .post-card h3 { margin: 4px 0 8px; color: #fff !important; }
-        .post-card p { color: var(--text); }
-        .meta { color: var(--muted); font-size: 0.85rem; font-family: 'JetBrains Mono', monospace; }
-        .tag {
-            display: inline-block; border: 1px solid rgba(167,139,250,.5); background: rgba(167,139,250,.1); color: var(--violet);
-            border-radius: 999px; padding: 1px 10px; font-size: 0.75rem; margin: 2px 4px 2px 0; font-family: 'JetBrains Mono', monospace;
+        .btn:hover { background: #eaf3fc; }
+        .btn.solid { background: var(--accent); color: #fff; }
+        .btn.solid:hover { background: var(--accent-dark); }
+
+        #progress { position: fixed; top: 0; left: 0; height: 3px; width: 0; background: var(--accent); z-index: 60; transition: width .1s; }
+
+        /* ---------- Feed layout ---------- */
+        .layout { max-width: 1192px; margin: 0 auto; padding: 0 24px; display: grid; grid-template-columns: minmax(0, 1fr) 368px; gap: 64px; }
+        .feed { padding-top: 40px; max-width: 728px; }
+        .feed-tabs { display: flex; gap: 24px; border-bottom: 1px solid var(--line); margin-bottom: 8px; font-size: 0.9rem; overflow-x: auto; }
+        .feed-tabs a { padding: 0 0 16px; color: var(--muted); white-space: nowrap; border-bottom: 1px solid transparent; margin-bottom: -1px; }
+        .feed-tabs a.active { color: var(--ink); border-bottom-color: var(--ink); }
+
+        .story { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 40px; padding: 28px 0; border-bottom: 1px solid var(--line); }
+        .byline-sm { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; margin-bottom: 10px; }
+        .byline-sm img { width: 22px; height: 22px; border-radius: 50%; object-fit: cover; }
+        .story h2 { font-size: 1.4rem; line-height: 1.3; font-weight: 800; margin: 0 0 8px; letter-spacing: -0.015em; }
+        .story p { font-family: var(--serif); color: var(--muted); margin: 0 0 14px; font-size: 1rem; line-height: 1.5;
+            display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .story:hover h2 { text-decoration: underline; text-decoration-thickness: 1px; }
+        .story-meta { display: flex; align-items: center; gap: 10px; font-size: 0.8rem; color: var(--muted); flex-wrap: wrap; }
+        .story-thumb { width: 160px; height: 107px; object-fit: cover; border-radius: 4px; background: var(--line); }
+        .story-thumb.placeholder {
+            display: flex; align-items: center; justify-content: center; color: #fff; font-family: var(--serif); font-size: 2.2rem; font-weight: 600;
+            background: linear-gradient(135deg, #0a66c2, #6d28d9);
         }
-        a.tag:hover { color: #fff; border-color: var(--cyan); }
-        .tag.active { background: var(--grad); color: #05070f; border-color: transparent; }
-        #search {
-            max-width: 280px; background: rgba(10,14,30,.6); border: 1px solid var(--glass-border); color: var(--text); border-radius: 999px;
+        .pill { display: inline-block; background: var(--line); color: var(--ink); border-radius: 999px; padding: 3px 10px; font-size: 0.78rem; }
+        a.pill:hover { background: var(--line-2); }
+        .pill.active { background: var(--ink); color: #fff; }
+
+        .search { width: 100%; border: none; background: #f9f9f9; border-radius: 999px; padding: 10px 16px 10px 40px; font-size: 0.9rem; font-family: var(--sans); outline: none; }
+        .search-wrap { position: relative; margin-bottom: 32px; }
+        .search-wrap i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.85rem; }
+
+        /* ---------- Sidebar (LinkedIn-style profile) ---------- */
+        .sidebar { border-left: 1px solid var(--line); padding: 40px 0 40px 40px; position: sticky; top: 57px; height: calc(100vh - 57px); overflow-y: auto; }
+        .profile-card { border: 1px solid var(--line-2); border-radius: 10px; overflow: hidden; margin-bottom: 36px; }
+        .profile-cover { height: 64px; background: linear-gradient(120deg, #0a66c2, #5b8def 55%, #a78bfa); }
+        .profile-body { padding: 0 20px 20px; }
+        .profile-body img { width: 76px; height: 76px; border-radius: 50%; object-fit: cover; border: 3px solid #fff; margin-top: -38px; }
+        .profile-body h3 { margin: 10px 0 2px; font-size: 1.1rem; }
+        .profile-body .headline { font-size: 0.85rem; color: var(--ink); margin: 0 0 6px; line-height: 1.4; }
+        .profile-body .loc { font-size: 0.8rem; color: var(--muted); margin: 0 0 14px; }
+        .profile-body .bio { font-size: 0.85rem; color: var(--muted); line-height: 1.5; margin: 0 0 16px; }
+        .profile-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .side-h { font-size: 1rem; font-weight: 600; margin: 0 0 14px; }
+        .topics { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 36px; }
+        .side-footer { font-size: 0.75rem; color: var(--muted); }
+        .side-footer a:hover { color: var(--ink); }
+
+        /* ---------- Article ---------- */
+        .article-wrap { max-width: 728px; margin: 0 auto; padding: 48px 24px 80px; }
+        .article-wrap > h1 { font-size: clamp(2rem, 4.5vw, 2.6rem); line-height: 1.2; font-weight: 800; letter-spacing: -0.025em; margin: 0 0 14px; }
+        .subtitle { font-family: var(--sans); font-size: 1.3rem; color: var(--muted); line-height: 1.4; margin: 0 0 30px; font-weight: 400; }
+        .byline { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
+        .byline img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
+        .byline .name { font-weight: 500; font-size: 1rem; display: flex; align-items: center; gap: 10px; }
+        .byline .name .follow { color: var(--accent); font-size: 0.9rem; }
+        .byline .sub { color: var(--muted); font-size: 0.875rem; }
+
+        .actionbar {
+            display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+            padding: 10px 6px; margin-bottom: 40px; color: var(--muted);
         }
-        #search:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(34,211,238,.2); background: rgba(10,14,30,.8); color: #fff; }
-        article.post {
-            background: var(--glass); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-            border: 1px solid var(--glass-border); border-radius: 22px; padding: 40px clamp(20px, 5vw, 48px); margin-top: 20px;
+        .actionbar .group { display: flex; gap: 22px; align-items: center; }
+        .icon-btn { background: none; border: none; color: var(--muted); font-size: 1.05rem; cursor: pointer; padding: 4px; display: inline-flex; align-items: center; gap: 6px; font-family: var(--sans); }
+        .icon-btn:hover { color: var(--ink); }
+        .icon-btn small { font-size: 0.8rem; }
+
+        .source-note { font-size: 0.9rem; color: var(--muted); background: #fafafa; border: 1px solid var(--line-2); border-radius: 8px; padding: 14px 18px; margin: 0 0 36px; line-height: 1.5; }
+        .source-note b { color: var(--ink); font-weight: 600; }
+        .source-note a { color: var(--accent); }
+
+        .prose { font-family: var(--serif); font-size: 1.25rem; line-height: 1.6; letter-spacing: -0.003em; color: var(--ink); }
+        .prose p { margin: 0 0 1.6em; }
+        .prose h2 { font-family: var(--sans); font-size: 1.5rem; font-weight: 700; letter-spacing: -0.015em; line-height: 1.25; margin: 2em 0 0.5em; }
+        .prose h3 { font-family: var(--sans); font-size: 1.2rem; font-weight: 700; margin: 1.6em 0 0.4em; }
+        .prose a { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+        .prose a:hover { color: var(--accent); }
+        .prose strong { font-weight: 600; }
+        .prose blockquote { margin: 1.6em 0; padding-left: 22px; border-left: 3px solid var(--ink); font-style: italic; }
+        .prose blockquote p { margin: 0; }
+        .prose ul, .prose ol { padding-left: 1.4em; margin: 0 0 1.6em; }
+        .prose li { margin-bottom: 0.5em; padding-left: 0.3em; }
+        .prose table { width: 100%; border-collapse: collapse; margin: 1.6em 0 2em; font-family: var(--sans); font-size: 0.95rem; line-height: 1.5; }
+        .prose th { text-align: left; font-weight: 600; border-bottom: 2px solid var(--ink); padding: 10px 12px 10px 0; }
+        .prose td { border-bottom: 1px solid var(--line-2); padding: 12px 12px 12px 0; vertical-align: top; }
+        .prose code { font-size: 0.85em; background: #f2f2f2; padding: 2px 5px; border-radius: 3px; }
+        .prose pre { background: #f9f9f9; padding: 18px; border-radius: 4px; overflow-x: auto; font-size: 0.85rem; }
+        .prose pre code { background: none; padding: 0; }
+        .prose img { max-width: 100%; margin: 2em auto; }
+        .prose hr { border: none; text-align: center; margin: 2.5em 0; }
+        .prose hr::before { content: "...";  letter-spacing: 0.6em; font-size: 1.6rem; color: var(--ink); }
+
+        .article-tags { display: flex; gap: 8px; flex-wrap: wrap; margin: 48px 0 28px; }
+        .article-tags .pill { padding: 8px 16px; font-size: 0.85rem; }
+
+        .author-box { border-top: 1px solid var(--line); margin-top: 32px; padding-top: 36px; }
+        .author-box img { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; margin-bottom: 16px; }
+        .author-box .row { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+        .author-box h3 { font-size: 1.4rem; margin: 0 0 6px; font-weight: 600; }
+        .author-box p { color: var(--muted); font-size: 0.9rem; margin: 0; line-height: 1.5; max-width: 520px; }
+
+        .more { background: #fafafa; border-top: 1px solid var(--line); }
+        .more-inner { max-width: 728px; margin: 0 auto; padding: 40px 24px 60px; }
+        .more h4 { font-size: 1rem; margin: 0 0 8px; }
+        .more .story:last-child { border-bottom: none; }
+
+        .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--ink); color: #fff; padding: 10px 18px; border-radius: 6px; font-size: 0.875rem; transition: transform .25s; z-index: 70; }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+
+        @media (max-width: 1000px) {
+            .layout { grid-template-columns: 1fr; gap: 0; }
+            .sidebar { position: static; height: auto; border-left: none; border-top: 1px solid var(--line); padding: 32px 0; }
         }
-        article.post > h1 { font-size: clamp(1.8rem, 4vw, 2.5rem); line-height: 1.25; margin: .3em 0 .5em; }
-        .source-box {
-            background: rgba(34,211,238,.06); border: 1px solid rgba(34,211,238,.25); border-left: 3px solid var(--cyan);
-            padding: 12px 18px; border-radius: 10px; margin: 18px 0 28px;
+        @media (max-width: 600px) {
+            .story { gap: 16px; }
+            .story-thumb { width: 88px; height: 88px; }
+            .story h2 { font-size: 1.1rem; }
+            .topbar nav .hide-sm { display: none; }
+            .prose { font-size: 1.125rem; }
         }
-        .post-body { font-size: 1.05rem; }
-        .post-body h2 { margin-top: 1.8em; font-size: 1.55rem; display: block; width: fit-content; }
-        .post-body blockquote {
-            border-left: 3px solid var(--violet); background: rgba(167,139,250,.07); padding: 12px 18px; border-radius: 0 10px 10px 0;
-            color: #e9e5ff; font-style: italic; margin: 1.2em 0;
-        }
-        .post-body table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 1.2em 0 1.6em; border: 1px solid var(--glass-border); border-radius: 12px; overflow: hidden; }
-        .post-body th, .post-body td { padding: 10px 14px; text-align: left; vertical-align: top; border-bottom: 1px solid rgba(120,160,255,.1); }
-        .post-body th { background: rgba(34,211,238,.12); color: #fff; font-family: 'Space Grotesk', sans-serif; }
-        .post-body tr:last-child td { border-bottom: none; }
-        .post-body tr:hover td { background: rgba(120,160,255,.05); }
-        .post-body code { color: var(--pink); background: rgba(244,114,182,.08); padding: 1px 6px; border-radius: 4px; }
-        .post-body pre { background: rgba(5,7,15,.8); border: 1px solid var(--glass-border); padding: 14px; border-radius: 10px; }
-        .post-body img { max-width: 100%; border-radius: 12px; }
-        .post-body li::marker { color: var(--cyan); }
-        .post-nav { display: flex; justify-content: space-between; gap: 16px; margin-top: 24px; font-family: 'Space Grotesk', sans-serif; }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <div class="topbar">
-            <a href="../index.html"><i class="fas fa-arrow-left"></i> Back to portfolio</a>
-            <a href="./" id="all-posts-link" style="display:none">All posts</a>
+    <div id="progress"></div>
+    <header class="topbar">
+        <div class="topbar-inner">
+            <a href="./" class="logo">AI Daily<span>.</span></a>
+            <nav>
+                <a href="../index.html" class="hide-sm">Portfolio</a>
+                <a href="https://github.com/pavanbodanki" target="_blank" rel="noopener" class="hide-sm">GitHub</a>
+                <a href="https://linkedin.com/in/pavan-bodanki" target="_blank" rel="noopener" class="btn solid"><i class="fab fa-linkedin-in"></i> Follow</a>
+            </nav>
         </div>
-        <div id="app"><p class="meta">Loading…</p></div>
-    </div>
+    </header>
+
+    <main id="app"></main>
+    <div class="toast" id="toast">Link copied</div>
 
     <script>
+        const AUTHOR = {
+            name: 'Pavan Bodanki',
+            avatar: '../pavan.jpg',
+            headline: 'Data Scientist, AI Assurance & Clinical Data Science @ Mount Sinai',
+            location: 'New York, NY',
+            bio: 'I evaluate generative and agentic AI for healthcare. Every day I read something about AI and write down what I think of it.',
+            linkedin: 'https://linkedin.com/in/pavan-bodanki'
+        };
+
         const app = document.getElementById('app');
         const params = new URLSearchParams(location.search);
         const slug = params.get('post');
         const tagFilter = params.get('tag');
 
         const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-        const fmtDate = d => new Date(d + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-        const tagsHtml = tags => (tags || []).map(t =>
-            `<a class="tag ${t === tagFilter ? 'active' : ''}" href="?tag=${encodeURIComponent(t)}">${esc(t)}</a>`).join('');
+        const fmtDate = (d, long) => new Date(d + 'T00:00:00').toLocaleDateString('en-US', long ? { year: 'numeric', month: 'short', day: 'numeric' } : { month: 'short', day: 'numeric', year: 'numeric' });
+        const readTime = text => Math.max(1, Math.round((text || '').split(/\s+/).filter(Boolean).length / 230));
+        const postUrl = p => `?post=${encodeURIComponent(p.slug)}`;
+        const mdCache = {};
+        const getMd = async p => mdCache[p.slug] ??= await fetch(`posts/${encodeURIComponent(p.slug)}.md`, { cache: 'no-cache' }).then(r => r.ok ? r.text() : '');
 
-        async function loadPosts() {
-            const res = await fetch('posts.json', { cache: 'no-cache' });
-            const posts = await res.json();
-            return posts.sort((a, b) => b.date.localeCompare(a.date));
+        function thumb(p) {
+            return p.cover
+                ? `<img class="story-thumb" src="${esc(p.cover)}" alt="" loading="lazy">`
+                : `<div class="story-thumb placeholder">${esc((p.title || '?')[0])}</div>`;
         }
 
-        function renderList(posts) {
+        function storyHtml(p) {
+            return `
+            <a class="story" href="${postUrl(p)}">
+                <div>
+                    <div class="byline-sm"><img src="${AUTHOR.avatar}" alt=""><span>${AUTHOR.name}</span></div>
+                    <h2>${esc(p.title)}</h2>
+                    <p>${esc(p.summary)}</p>
+                    <div class="story-meta">
+                        <span>${fmtDate(p.date)}</span><span>·</span><span>${p._rt || '…'} min read</span>
+                        ${(p.tags || []).slice(0, 2).map(t => `<span class="pill">${esc(t)}</span>`).join('')}
+                    </div>
+                </div>
+                ${thumb(p)}
+            </a>`;
+        }
+
+        async function loadPosts() {
+            const posts = await fetch('posts.json', { cache: 'no-cache' }).then(r => r.json());
+            posts.sort((a, b) => b.date.localeCompare(a.date));
+            await Promise.all(posts.map(async p => { p._rt = readTime(await getMd(p)); }));
+            return posts;
+        }
+
+        function renderFeed(posts) {
             document.title = 'AI Daily — Pavan Bodanki';
+            const allTags = [...new Set(posts.flatMap(p => p.tags || []))];
             const filtered = tagFilter ? posts.filter(p => (p.tags || []).includes(tagFilter)) : posts;
             app.innerHTML = `
-                <div class="blog-hero"><div class="kicker">// PAVAN BODANKI · BLOG</div><h1>AI Daily</h1>
-                <p class="lead">Every day I read something about AI — a paper, a release, an article — and post my take.</p></div>
-                <div class="d-flex justify-content-between align-items-center flex-wrap" style="gap:10px">
-                    <span class="meta">${filtered.length} post${filtered.length === 1 ? '' : 's'}${tagFilter ? ` tagged <b>${esc(tagFilter)}</b> · <a href="./">clear</a>` : ''}</span>
-                    <input id="search" class="form-control form-control-sm" placeholder="Search posts…">
-                </div>
-                <div id="list"></div>`;
+            <div class="layout">
+                <section class="feed">
+                    <div class="search-wrap"><i class="fas fa-search"></i><input class="search" id="search" placeholder="Search AI Daily"></div>
+                    <div class="feed-tabs">
+                        <a href="./" class="${tagFilter ? '' : 'active'}">For you</a>
+                        ${allTags.map(t => `<a href="?tag=${encodeURIComponent(t)}" class="${t === tagFilter ? 'active' : ''}">${esc(t)}</a>`).join('')}
+                    </div>
+                    <div id="list"></div>
+                </section>
+                <aside class="sidebar">
+                    <div class="profile-card">
+                        <div class="profile-cover"></div>
+                        <div class="profile-body">
+                            <img src="${AUTHOR.avatar}" alt="${AUTHOR.name}">
+                            <h3>${AUTHOR.name}</h3>
+                            <p class="headline">${AUTHOR.headline}</p>
+                            <p class="loc">${AUTHOR.location} · ${posts.length} post${posts.length === 1 ? '' : 's'}</p>
+                            <p class="bio">${AUTHOR.bio}</p>
+                            <div class="profile-actions">
+                                <a class="btn solid" href="${AUTHOR.linkedin}" target="_blank" rel="noopener"><i class="fab fa-linkedin-in"></i> Connect</a>
+                                <a class="btn" href="../index.html">View portfolio</a>
+                            </div>
+                        </div>
+                    </div>
+                    <h4 class="side-h">Topics</h4>
+                    <div class="topics">${allTags.map(t => `<a class="pill ${t === tagFilter ? 'active' : ''}" href="?tag=${encodeURIComponent(t)}">${esc(t)}</a>`).join('')}</div>
+                    <div class="side-footer"><a href="../index.html">Portfolio</a> · <a href="${AUTHOR.linkedin}" target="_blank" rel="noopener">LinkedIn</a> · <a href="https://github.com/pavanbodanki" target="_blank" rel="noopener">GitHub</a></div>
+                </aside>
+            </div>`;
             const list = document.getElementById('list');
             const draw = q => {
                 q = q.toLowerCase();
-                const items = filtered.filter(p =>
-                    !q || [p.title, p.summary, p.source?.title, ...(p.tags || [])].join(' ').toLowerCase().includes(q));
-                list.innerHTML = items.length ? items.map(p => `
-                    <a class="post-card" href="?post=${encodeURIComponent(p.slug)}">
-                        <div class="meta">${fmtDate(p.date)}${p.source?.title ? ` · Read: ${esc(p.source.title)}` : ''}</div>
-                        <h3>${esc(p.title)}</h3>
-                        <p class="mb-2">${esc(p.summary)}</p>
-                        <div>${(p.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join('')}</div>
-                    </a>`).join('') : '<p class="meta mt-4">No posts found.</p>';
+                const items = filtered.filter(p => !q || [p.title, p.summary, p.source?.title, ...(p.tags || [])].join(' ').toLowerCase().includes(q));
+                list.innerHTML = items.length ? items.map(storyHtml).join('') : '<p style="color:var(--muted);padding:40px 0">No stories found.</p>';
             };
             document.getElementById('search').addEventListener('input', e => draw(e.target.value));
             draw('');
-            window.revealCards && window.revealCards();
         }
 
         async function renderPost(posts) {
-            document.getElementById('all-posts-link').style.display = '';
             const idx = posts.findIndex(p => p.slug === slug);
             if (idx === -1) {
-                app.innerHTML = '<h2>Post not found</h2><p><a href="./">See all posts</a></p>';
+                app.innerHTML = '<div class="article-wrap"><h1>Story not found</h1><p><a class="btn" href="./">Back to AI Daily</a></p></div>';
                 return;
             }
             const p = posts[idx];
-            document.title = `${p.title} — AI Daily`;
-            const res = await fetch(`posts/${encodeURIComponent(p.slug)}.md`, { cache: 'no-cache' });
-            const md = res.ok ? await res.text() : '_Post content not found._';
-            const newer = posts[idx - 1], older = posts[idx + 1];
-            app.innerHTML = `
-                <article class="post">
-                    <div class="meta">${fmtDate(p.date)}</div>
-                    <h1>${esc(p.title)}</h1>
-                    <div>${tagsHtml(p.tags)}</div>
-                    ${p.source?.title ? `<div class="source-box"><b>What I read:</b> ${p.source.url
-                        ? `<a href="${esc(p.source.url)}" target="_blank" rel="noopener">${esc(p.source.title)} <i class="fas fa-external-link-alt fa-xs"></i></a>`
-                        : esc(p.source.title)}</div>` : ''}
-                    <div class="post-body">${DOMPurify.sanitize(marked.parse(md))}</div>
-                </article>
-                <div class="post-nav">
-                    <span>${older ? `<a href="?post=${encodeURIComponent(older.slug)}">← ${esc(older.title)}</a>` : ''}</span>
-                    <span>${newer ? `<a href="?post=${encodeURIComponent(newer.slug)}">${esc(newer.title)} →</a>` : ''}</span>
+            document.title = `${p.title} | AI Daily — Pavan Bodanki`;
+            const md = await getMd(p) || '_Post content not found._';
+            const here = location.href;
+            const share = {
+                linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(here)}`,
+                x: `https://twitter.com/intent/tweet?url=${encodeURIComponent(here)}&text=${encodeURIComponent(p.title)}`
+            };
+            const actionbar = `
+                <div class="actionbar">
+                    <div class="group">
+                        <span class="icon-btn" title="Reading time"><i class="far fa-clock"></i><small>${p._rt} min</small></span>
+                        <a class="icon-btn" href="#author" title="About the author"><i class="far fa-user"></i></a>
+                    </div>
+                    <div class="group">
+                        <a class="icon-btn" href="${share.linkedin}" target="_blank" rel="noopener" title="Share on LinkedIn"><i class="fab fa-linkedin"></i></a>
+                        <a class="icon-btn" href="${share.x}" target="_blank" rel="noopener" title="Share on X"><i class="fab fa-x-twitter"></i></a>
+                        <button class="icon-btn copy-link" title="Copy link"><i class="fas fa-link"></i></button>
+                    </div>
                 </div>`;
+            const others = posts.filter(o => o.slug !== p.slug).slice(0, 3);
+            app.innerHTML = `
+            <article class="article-wrap">
+                <h1>${esc(p.title)}</h1>
+                ${p.summary ? `<h2 class="subtitle">${esc(p.summary)}</h2>` : ''}
+                <div class="byline">
+                    <img src="${AUTHOR.avatar}" alt="${AUTHOR.name}">
+                    <div>
+                        <div class="name">${AUTHOR.name} <span>·</span> <a class="follow" href="${AUTHOR.linkedin}" target="_blank" rel="noopener">Follow</a></div>
+                        <div class="sub">${p._rt} min read · ${fmtDate(p.date, true)}</div>
+                    </div>
+                </div>
+                ${actionbar}
+                ${p.source?.title ? `<div class="source-note"><b>What I read:</b> ${p.source.url
+                    ? `<a href="${esc(p.source.url)}" target="_blank" rel="noopener">${esc(p.source.title)}</a>`
+                    : esc(p.source.title)}</div>` : ''}
+                <div class="prose">${DOMPurify.sanitize(marked.parse(md))}</div>
+                <div class="article-tags">${(p.tags || []).map(t => `<a class="pill" href="./?tag=${encodeURIComponent(t)}">${esc(t)}</a>`).join('')}</div>
+                ${actionbar}
+                <div class="author-box" id="author">
+                    <img src="${AUTHOR.avatar}" alt="${AUTHOR.name}">
+                    <div class="row">
+                        <div>
+                            <h3>Written by ${AUTHOR.name}</h3>
+                            <p>${AUTHOR.headline}. ${AUTHOR.bio}</p>
+                        </div>
+                        <a class="btn solid" href="${AUTHOR.linkedin}" target="_blank" rel="noopener"><i class="fab fa-linkedin-in"></i> Follow</a>
+                    </div>
+                </div>
+            </article>
+            ${others.length ? `<section class="more"><div class="more-inner"><h4>More from ${AUTHOR.name}</h4>${others.map(storyHtml).join('')}
+                <p style="margin-top:24px"><a class="btn" href="./">See all from ${AUTHOR.name}</a></p></div></section>` : ''}`;
+
+            document.querySelectorAll('.copy-link').forEach(b => b.addEventListener('click', async () => {
+                try { await navigator.clipboard.writeText(here); } catch (e) { }
+                const t = document.getElementById('toast');
+                t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 1600);
+            }));
+
+            const bar = document.getElementById('progress');
+            const onScroll = () => {
+                const h = document.documentElement;
+                const max = h.scrollHeight - h.clientHeight;
+                bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+            };
+            addEventListener('scroll', onScroll, { passive: true });
+            onScroll();
         }
 
         loadPosts()
-            .then(posts => slug ? renderPost(posts) : renderList(posts))
-            .catch(err => { app.innerHTML = `<p class="text-danger">Could not load posts: ${esc(err.message)}</p>`; });
+            .then(posts => slug ? renderPost(posts) : renderFeed(posts))
+            .catch(err => { app.innerHTML = `<div class="article-wrap"><p>Could not load posts: ${esc(err.message)}</p></div>`; });
     </script>
-    <script src="../theme.js"></script>
 </body>
 
 </html>
-
