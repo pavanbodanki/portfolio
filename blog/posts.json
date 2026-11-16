@@ -1,0 +1,13 @@
+[
+  {
+    "slug": "2026-11-15-ai-building-blocks",
+    "title": "The building blocks: Transformers, RAG, agents, multi-agent systems, agentic architectures, and MCP",
+    "date": "2026-11-15",
+    "source": {
+      "title": "Foundational reading: Attention Is All You Need, the RAG paper, Building Effective Agents, and the MCP docs",
+      "url": ""
+    },
+    "tags": ["foundations", "transformers", "rag", "agents", "multi-agent", "mcp"],
+    "summary": "Six terms that often show up in the same conversation but describe different parts of an AI system, explained through one example: an assistant that researches a topic and drafts a blog update."
+  }
+]

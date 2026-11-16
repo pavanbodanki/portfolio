@@ -276,6 +276,9 @@
                             <a class="nav-link" onclick="scrollToSection('leadership')"><b>Leadership &
                                     Activities</b></a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="blog/"><b>AI Daily Blog</b></a>
+                        </li>
                     </ul>
                 </div>
         </nav>
@@ -342,6 +345,15 @@
             </div>
 
         </section>
+
+        <div class="section blog">
+            <div class="card">
+                <h2>AI Daily <small class="text-muted" style="font-size:0.55em">I read AI every day and post my take</small></h2>
+                <div id="latest-posts"><p>Loading latest posts…</p></div>
+                <a href="blog/">See all posts <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+
         <div class="section education">
             <div class="card">
                 <h2>Education</h2>
@@ -654,6 +666,24 @@
                 window.scrollTo({ top: top, behavior: "smooth" });
             }
         }
+
+        // Latest AI Daily posts
+        (function () {
+            const box = document.getElementById('latest-posts');
+            const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+            fetch('blog/posts.json', { cache: 'no-cache' })
+                .then(r => r.json())
+                .then(posts => {
+                    posts.sort((a, b) => b.date.localeCompare(a.date));
+                    box.innerHTML = posts.slice(0, 3).map(p => `
+                        <div class="mb-3">
+                            <h3 class="mb-0" style="margin-top:0.5em"><a href="blog/?post=${encodeURIComponent(p.slug)}">${esc(p.title)}</a></h3>
+                            <small class="text-muted">${esc(p.date)}${p.source && p.source.title ? ' · Read: ' + esc(p.source.title) : ''}</small>
+                            <p class="mb-0">${esc(p.summary)}</p>
+                        </div>`).join('') || '<p>First post coming soon.</p>';
+                })
+                .catch(() => { box.innerHTML = '<p>Could not load posts.</p>'; });
+        })();
     </script>
 </body>
 
