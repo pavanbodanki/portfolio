@@ -1,128 +1,98 @@
-AI terminology moves fast. RAG, Transformers, agents, multi-agent systems, agentic architectures, and MCP often appear in the same conversation. But each describes a different part of how an AI system works.
+AI conversations are full of terms like Transformers, RAG, agents, multi-agent systems, agentic architectures, and MCP. They are related, but each describes a different part of an AI system.
 
-This blog starts by explaining those building blocks. From there, I'll track meaningful advancements: what changed, how it works, what the evidence shows, and why it matters.
+Let's explore them through a familiar example: **an AI shopping assistant helping someone choose a laptop.**
 
-Let's connect the concepts through one example: **an AI assistant that researches a topic and prepares a blog update.**
+## 1. Transformers: understanding the request
 
-## 1. Transformers: the model architecture
+A Transformer is a neural network architecture used in many language models. Its attention mechanism helps the model process relationships between tokens in the input. The architecture was introduced in the paper [*Attention Is All You Need*](https://arxiv.org/abs/1706.03762).
 
-A Transformer is a neural network architecture introduced in the 2017 paper [*Attention Is All You Need*](https://arxiv.org/abs/1706.03762). Its defining mechanism, **attention**, helps the model weigh relationships between tokens when processing a sequence. Tokens can represent words, parts of words, or other units of information.
+Imagine asking:
 
-Consider this sentence:
+> "I need a lightweight laptop for work, occasional gaming, and travel. My budget is $1,200."
 
-> "The researcher reviewed the paper because **it** introduced a useful method."
+A Transformer-based model can interpret those requirements and generate a relevant response. But knowing what the request means does not automatically give it current laptop prices or availability.
 
-Understanding what "it" refers to requires connecting different parts of the sentence. Attention helps a model represent those relationships.
+## 2. RAG: looking up relevant information
 
-For our blog assistant, a Transformer-based language model could explain a research paper and draft an article. However, the architecture alone does not give the assistant access to newly published research.
+Retrieval-augmented generation, or RAG, combines information retrieval with answer generation. The system retrieves relevant material and supplies it to the model as context ([Lewis et al., 2020](https://arxiv.org/abs/2005.11401)).
 
-**What I'll track:** changes to attention mechanisms, context handling, model efficiency, and architectural design.
+For the shopping assistant, that material could include product specifications, warranty documents, and reviews.
 
-## 2. RAG: bringing relevant information into the answer
+The assistant retrieves information about suitable laptops, then uses it to explain the options.
 
-Retrieval-augmented generation, or RAG, combines information retrieval with text generation. Instead of relying only on information encoded during training, the system retrieves relevant material and uses it to help produce an answer. The [foundational RAG paper](https://arxiv.org/abs/2005.11401) explored combining a language model's learned knowledge with an external document index.
+**Example:** "These two models meet your weight and budget requirements. One has better battery life; the other has a stronger graphics processor."
 
-For our blog assistant, a possible workflow is:
+The answer still depends on the quality and freshness of the retrieved information. RAG can support an answer without guaranteeing that it is correct.
 
-1. Search an indexed collection of research papers.
-2. Retrieve passages relevant to the chosen topic.
-3. Include those passages in the model's context.
-4. Draft an explanation grounded in the retrieved material.
+## 3. AI agents: deciding what to do next
 
-A practical limitation follows: if retrieval misses an important paper or selects an outdated passage, the answer can still be incomplete. Providing sources helps readers inspect the evidence; it does not automatically prove every claim.
+An AI agent uses a model to select actions while working toward a goal. It can call tools, examine results, and adjust its approach. This differs from a workflow whose steps are entirely predefined ([Anthropic, *Building Effective Agents*](https://www.anthropic.com/engineering/building-effective-agents)).
 
-**What I'll track:** retrieval quality, document preparation, ranking methods, grounding, and ways to evaluate the resulting answers.
+Our shopping assistant might:
 
-## 3. AI agents: choosing the next action
+1. Search for laptops within the budget.
+2. Check their specifications.
+3. Compare available prices.
+4. Ask whether battery life or gaming performance matters more.
+5. Refine its recommendations.
 
-An AI agent uses a model to decide what to do next while working toward a goal. It can use tools, inspect the results, and adjust its approach. A [useful distinction](https://www.anthropic.com/engineering/building-effective-agents) is that a predefined **workflow** follows steps set by developers, while an **agent** has more control over its next steps.
+The important feature is its ability to choose the next step based on what it learns.
 
-Suppose we ask our blog assistant:
+## 4. Multi-agent systems: sharing the work
 
-> "Find an important RAG development and explain whether its results justify the headline."
+A multi-agent system uses multiple coordinated agents. Work may be divided by specialty or delegated to agents that handle separate subtasks ([Anthropic, *Building Effective Agents*](https://www.anthropic.com/engineering/building-effective-agents)).
 
-An agent could search for announcements, locate the underlying paper, inspect the evaluation, and search again when information is missing.
-
-That flexibility introduces design questions: Which tools can it use? When should it stop? What counts as enough evidence?
-
-**What I'll track:** tool use, task completion, recovery from errors, and the reliability of autonomous decisions.
-
-## 4. Multi-agent systems: dividing the work
-
-A multi-agent system coordinates multiple agents. Each may have a different role, set of tools, or working context. Tasks can be divided into parallel work or delegated by a coordinating agent. These patterns can help with separable subtasks, although the coordination adds complexity.
-
-For our blog assistant, one possible design is:
+For example, a shopping assistant could use:
 
 | Agent | Responsibility |
 |---|---|
-| Researcher | Find relevant papers and announcements |
-| Evidence reviewer | Check whether sources support the proposed claims |
-| Writer | Turn the findings into an accessible article |
-| Editor | Check clarity, repetition, and missing qualifications |
+| Product researcher | Find laptops that meet the requirements |
+| Price checker | Compare current offers |
+| Review analyst | Identify recurring strengths and complaints |
+| Coordinator | Combine the findings into a recommendation |
 
-This is an illustrative design, not a guarantee of better output. Several agents can repeat the same mistake, and an editor cannot verify evidence it never receives.
+This is one possible design. Multiple agents also introduce extra communication, cost, and opportunities for inconsistent results. Their value needs to be tested against a simpler approach.
 
-**What I'll track:** delegation, communication, shared context, and whether multiple agents improve results enough to justify their cost.
+## 5. Agentic architectures: organizing the system
 
-## 5. Agentic architectures: organizing the whole system
+An agentic architecture is the overall design that connects models, tools, decisions, and working state. It can combine predefined workflows with one or more agents ([Anthropic, *Building Effective Agents*](https://www.anthropic.com/engineering/building-effective-agents)).
 
-An agentic architecture describes how models, tools, state, decisions, and checks fit together. It may use one agent, several agents, predefined workflows, or a combination. Common patterns include routing requests, running tasks in parallel, and using an evaluator to guide revisions.
+For our shopping assistant, the design would determine:
 
-For our blog assistant, I would start with this design:
+- When to ask the shopper a question.
+- Which searches or tools to use.
+- How to remember the shopper's requirements.
+- How to handle conflicting prices.
+- When enough information has been gathered.
 
-1. A **scheduled trigger** starts the research.
-2. A **research component** gathers candidate developments.
-3. An **evidence check** filters unsupported claims.
-4. A **writing component** drafts the update.
-5. A **history** records which developments have already been covered.
+An agent is a component within this design. The architecture defines how that component works with everything around it.
 
-The schedule and history are application features. They do not require a multi-agent system by themselves.
+## 6. MCP: connecting to tools and information
 
-**What I'll track:** orchestration patterns, state management, evaluation, and where human review improves the workflow.
+Model Context Protocol, or MCP, provides a standard way for AI applications to connect to external capabilities. It uses a host, client, and server architecture; servers can expose tools and resources ([MCP documentation](https://modelcontextprotocol.io/)).
 
-## 6. MCP: connecting AI applications to capabilities
+In our example, a retailer could provide an MCP server with tools for checking product details and inventory. A compatible AI application could connect to those tools.
 
-[Model Context Protocol](https://modelcontextprotocol.io/), or MCP, is a protocol for connecting AI applications with external capabilities. Its architecture includes a **host** application, **clients**, and **servers**. Servers can expose capabilities such as tools and resources.
+MCP handles the communication structure. The application still needs permissions, reliable tool implementations, and checks around consequential actions.
 
-In our example, an MCP server could expose a tool that searches a research collection. Another could provide access to saved blog drafts.
+## Putting the pieces together
 
-MCP defines how the application communicates with those capabilities. The surrounding application still needs to decide which actions are allowed and how their results are checked.
-
-**What I'll track:** protocol changes, interoperability, useful integrations, and practical access controls.
-
-## How the pieces connect
-
-These concepts answer different questions:
-
-| Concept | Question it answers |
+| Concept | Role in the laptop example |
 |---|---|
-| Transformer | How does the model process information? |
-| RAG | How does the system retrieve supporting knowledge? |
-| Agent | How does the system choose its next action? |
-| Multi-agent system | How do multiple agents divide and coordinate work? |
-| Agentic architecture | How is the complete workflow organized? |
-| MCP | How does the application connect to external capabilities? |
+| **Transformer** | Processes the request and generates responses |
+| **RAG** | Retrieves supporting product information |
+| **Agent** | Chooses searches and follow-up actions |
+| **Multi-agent system** | Divides research among coordinated agents |
+| **Agentic architecture** | Organizes the complete shopping workflow |
+| **MCP** | Connects the application to external tools and resources |
 
-A research assistant could combine all six. It could also work well with a smaller design. The useful question is which components improve the task, and what evidence demonstrates that improvement.
+These components can work together, but every AI application does not need all six. A straightforward product comparison might need only a model and retrieval. A more involved assistant may benefit from tools, adaptive decisions, and coordination.
 
-## What comes next
+This series will explain these foundations and follow their development through dated updates, practical examples, and original sources, helping readers understand both what is changing and why it matters.
 
-Each topic will have a foundational explanation and a dated record of meaningful developments.
-
-For every update, I'll ask:
-
-- What changed?
-- How does it work?
-- What evidence supports it?
-- What limitations remain?
-- Why should a reader care?
-
-The aim is to give readers a place to understand the foundations, follow progress, and judge new claims with context.
-
-## Foundational reading
+## Sources
 
 - [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
 - [Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks](https://arxiv.org/abs/2005.11401)
 - [Building Effective Agents](https://www.anthropic.com/engineering/building-effective-agents)
 - [Model Context Protocol documentation](https://modelcontextprotocol.io/)
-
