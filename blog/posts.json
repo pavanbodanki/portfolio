@@ -7,7 +7,7 @@
       "title": "Foundational reading: Attention Is All You Need, the RAG paper, Building Effective Agents, and the MCP docs",
       "url": ""
     },
-    "tags": ["foundations", "transformers", "rag", "agents", "multi-agent", "mcp"],
+    "tags": [],
     "summary": "Six related terms that describe different parts of an AI system, explained through one familiar example: an AI shopping assistant helping someone choose a laptop."
   }
 ]
