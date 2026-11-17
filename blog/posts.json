@@ -1,5 +1,16 @@
 [
   {
+    "slug": "2026-11-16-agentic-threats-urgency-depends-on-what-ai-can-reach",
+    "title": "Agentic threats are here: the urgency depends on what AI can reach",
+    "date": "2026-11-16",
+    "source": {
+      "title": "Google Threat Intelligence Group — Agentic Threat Activity Crosses a Significant Threshold",
+      "url": "https://cloud.google.com/blog/topics/threat-intelligence/agentic-threat-activity-crosses-a-significant-threshold"
+    },
+    "tags": [],
+    "summary": "Google and Mandiant report attackers using agentic systems to run parts of cyber operations. My take: judge urgency by access, autonomy, scale, and consequences, and make sure a model's decision can never grant itself more permission."
+  },
+  {
     "slug": "2026-11-15-ai-building-blocks",
     "title": "The building blocks: Transformers, RAG, agents, multi-agent systems, agentic architectures, and MCP",
     "date": "2026-11-15",
