@@ -71,3 +71,4 @@ We need to ask how capable an AI system is, and whether we can reliably constrai
 ---
 
 **Source:** [Google Threat Intelligence Group — Agentic Threat Activity Crosses a Significant Threshold](https://cloud.google.com/blog/topics/threat-intelligence/agentic-threat-activity-crosses-a-significant-threshold), November 16, 2026.
+

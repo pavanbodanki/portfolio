@@ -1,5 +1,38 @@
 [
   {
+    "slug": "2026-11-17-mcp-discovery-hub-finding-tools-is-not-trusting-them",
+    "title": "MCP Discovery Hub: finding a tool is not the same as trusting it",
+    "date": "2026-11-17",
+    "source": {
+      "title": "SnapLogic — MCP Discovery Hub and new AI agent building and governance capabilities",
+      "url": "https://www.globenewswire.com/news-release/2026/11/17/3404392/0/en/snaplogic-launches-mcp-discovery-hub-adds-new-ai-agent-building-and-governance-capabilities.html"
+    },
+    "tags": [],
+    "summary": "SnapLogic launched a searchable catalog of MCP servers and tools. A catalog helps build an inventory, but trust still needs ownership, versioning, revocation, and authorization checks when tools are called."
+  },
+  {
+    "slug": "2026-11-17-github-malware-targets-ai-coding-assistants",
+    "title": "When repositories try to instruct your AI coding assistant",
+    "date": "2026-11-17",
+    "source": {
+      "title": "Bitdefender Labs — How AI agents become new targets in a GitHub malware campaign",
+      "url": "https://www.bitdefender.com/en-us/blog/labs/how-ai-agents-become-new-targets-in-github-malware-campaign"
+    },
+    "tags": [],
+    "summary": "Bitdefender found 22 malicious GitHub links aimed at AI-assisted development. Instructions inside a repository should never be trusted automatically; understanding them must be paired with limits on executing them."
+  },
+  {
+    "slug": "2026-11-17-ai-transparency-initiative-verify-what-agents-did",
+    "title": "Microsoft's AI Transparency Initiative: verify what agents did, not just what they say",
+    "date": "2026-11-17",
+    "source": {
+      "title": "Microsoft — AI Transparency Initiative to strengthen enterprise trust in AI models and agents",
+      "url": "https://news.microsoft.com/source/2026/11/17/microsoft-and-organizations-across-industries-launch-ai-transparency-initiative-to-strengthen-enterprise-trust-in-ai-models-and-agents/"
+    },
+    "tags": [],
+    "summary": "Microsoft and 40+ organizations announced a shared approach to AI transparency. I agree with independent verification; the real test is whether the evidence can detect problems, enforce limits, and reconstruct events."
+  },
+  {
     "slug": "2026-11-16-agentic-threats-urgency-depends-on-what-ai-can-reach",
     "title": "Agentic threats are here: the urgency depends on what AI can reach",
     "date": "2026-11-16",
