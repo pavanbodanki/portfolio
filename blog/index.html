@@ -157,6 +157,10 @@
         .author-box h3 { font-size: 1.4rem; margin: 0 0 6px; font-weight: 600; }
         .author-box p { color: var(--muted); font-size: 0.9rem; margin: 0; line-height: 1.5; max-width: 520px; }
 
+        .responses { border-top: 1px solid var(--line); margin-top: 40px; padding-top: 32px; }
+        .responses h3 { font-size: 1.3rem; margin: 0 0 4px; font-weight: 700; }
+        .comments-sub, .comments-note { color: var(--muted); font-size: 0.875rem; margin: 0 0 20px; }
+
         .more { background: #fafafa; border-top: 1px solid var(--line); }
         .more-inner { max-width: 728px; margin: 0 auto; padding: 40px 24px 60px; }
         .more h4 { font-size: 1rem; margin: 0 0 8px; }
@@ -204,6 +208,43 @@
             bio: 'I evaluate generative and agentic AI for healthcare. Every day I read something about AI and write down what I think of it.',
             linkedin: 'https://www.linkedin.com/in/bodankipavan/'
         };
+
+        // Comments powered by giscus (GitHub Discussions). See https://giscus.app
+        const GISCUS = {
+            repo: 'pavanbodanki/portfolio',
+            repoId: 'R_kgDOKcA3mg',
+            category: 'Announcements',
+            categoryId: '' // fill in after enabling Discussions + installing the giscus app
+        };
+
+        function mountComments(p) {
+            const box = document.getElementById('comments');
+            if (!box) return;
+            if (!GISCUS.categoryId) {
+                box.innerHTML = '<p class="comments-note">Comments are coming soon.</p>';
+                return;
+            }
+            const s = document.createElement('script');
+            s.src = 'https://giscus.app/client.js';
+            s.async = true;
+            s.crossOrigin = 'anonymous';
+            Object.entries({
+                'data-repo': GISCUS.repo,
+                'data-repo-id': GISCUS.repoId,
+                'data-category': GISCUS.category,
+                'data-category-id': GISCUS.categoryId,
+                'data-mapping': 'specific',
+                'data-term': p.slug,
+                'data-strict': '1',
+                'data-reactions-enabled': '1',
+                'data-emit-metadata': '0',
+                'data-input-position': 'top',
+                'data-theme': 'light',
+                'data-lang': 'en',
+                'data-loading': 'lazy'
+            }).forEach(([k, v]) => s.setAttribute(k, v));
+            box.appendChild(s);
+        }
 
         const app = document.getElementById('app');
         const params = new URLSearchParams(location.search);
@@ -312,6 +353,7 @@
                 <div class="actionbar">
                     <div class="group">
                         <span class="icon-btn" title="Reading time"><i class="far fa-clock"></i><small>${p._rt} min</small></span>
+                        <a class="icon-btn" href="#responses" title="Responses"><i class="far fa-comment"></i></a>
                         <a class="icon-btn" href="#author" title="About the author"><i class="far fa-user"></i></a>
                     </div>
                     <div class="group">
@@ -350,10 +392,16 @@
                         <a class="btn solid" href="${AUTHOR.linkedin}" target="_blank" rel="noopener"><i class="fab fa-linkedin-in"></i> Follow</a>
                     </div>
                 </div>
+                <section class="responses" id="responses">
+                    <h3>Responses</h3>
+                    <p class="comments-sub">Sign in with GitHub to leave a comment or reaction.</p>
+                    <div id="comments"></div>
+                </section>
             </article>
             ${others.length ? `<section class="more"><div class="more-inner"><h4>More from ${AUTHOR.name}</h4>${others.map(storyHtml).join('')}
                 <p style="margin-top:24px"><a class="btn" href="./">See all from ${AUTHOR.name}</a></p></div></section>` : ''}`;
 
+            mountComments(p);
             document.querySelectorAll('.copy-link').forEach(b => b.addEventListener('click', async () => {
                 try { await navigator.clipboard.writeText(here); } catch (e) { }
                 const t = document.getElementById('toast');
