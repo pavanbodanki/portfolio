@@ -25,3 +25,4 @@ For me, the next test is implementation. Useful transparency should help organiz
 ---
 
 **Source:** [Read Microsoft's announcement](https://news.microsoft.com/source/2026/11/17/microsoft-and-organizations-across-industries-launch-ai-transparency-initiative-to-strengthen-enterprise-trust-in-ai-models-and-agents/)
+

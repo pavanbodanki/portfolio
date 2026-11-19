@@ -1,5 +1,38 @@
 [
   {
+    "slug": "2026-11-18-digital-ai-release-agents-governed-delivery",
+    "title": "Agents in the release pipeline: generating a change is not authorizing it",
+    "date": "2026-11-18",
+    "source": {
+      "title": "Digital.ai — Release 26.3 brings AI agents into governed enterprise delivery",
+      "url": "https://digital.ai/press-releases/digital-ai-release-26-3-brings-ai-agents-into-governed-enterprise-delivery/"
+    },
+    "tags": [],
+    "summary": "Digital.ai Release 26.3 puts agents inside software-delivery workflows. My take: the release boundary matters, and authorization has to hold across every entry point, including MCP, retries, and delegation."
+  },
+  {
+    "slug": "2026-11-18-rag-in-a-trenchcoat-agent-memory",
+    "title": "Agent memory should be judged by behavior, not recall",
+    "date": "2026-11-18",
+    "source": {
+      "title": "RAG in a Trenchcoat: When Minimal Memory Is Enough for Agentic Systems, and When It Isn't (arXiv)",
+      "url": "https://arxiv.org/abs/2611.22179"
+    },
+    "tags": [],
+    "summary": "A simple memory system, BRIDGE, holds up against more complex designs, but retrieving a rule doesn't mean the model applies it. Memory should be evaluated in three stages: preserved, retrieved, and applied."
+  },
+  {
+    "slug": "2026-11-18-ragharnessdebugger-corrections-that-never-reach-the-user",
+    "title": "When the right correction never reaches the user",
+    "date": "2026-11-18",
+    "source": {
+      "title": "RagHarnessDebugger: Jev-Guided Agentic RAG in Contract Inference Repair Auditing (arXiv)",
+      "url": "https://arxiv.org/abs/2611.22991"
+    },
+    "tags": [],
+    "summary": "An agentic RAG system can find the evidence and generate the fix, then have its own acceptance rules block it. Final accuracy hides this; corrections and regressions need to be measured separately."
+  },
+  {
     "slug": "2026-11-17-mcp-discovery-hub-finding-tools-is-not-trusting-them",
     "title": "MCP Discovery Hub: finding a tool is not the same as trusting it",
     "date": "2026-11-17",

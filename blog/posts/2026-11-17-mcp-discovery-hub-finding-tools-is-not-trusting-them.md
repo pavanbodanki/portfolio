@@ -25,3 +25,4 @@ As integrations grow, the important measure is whether organizations can keep pe
 ---
 
 **Source:** [Read SnapLogic's announcement](https://www.globenewswire.com/news-release/2026/11/17/3404392/0/en/snaplogic-launches-mcp-discovery-hub-adds-new-ai-agent-building-and-governance-capabilities.html)
+
