@@ -1,5 +1,41 @@
 [
   {
+    "slug": "2026-11-19-openai-performance-factory",
+    "title": "OpenAI's Performance Factory: a merged fix is not a verified recovery",
+    "date": "2026-11-19",
+    "source": {
+      "title": "OpenAI — How OpenAI's Performance Factory keeps ChatGPT fast",
+      "url": "https://openai.com/index/how-openai-performance-factory-keeps-chatgpt-fast/"
+    },
+    "tags": [],
+    "cover": "posts/img/2026-11-19-performance-factory.jpg",
+    "summary": "OpenAI's agents investigate performance alerts, challenge diagnoses, and verify recovery. What makes it useful is the separation between investigation, challenge, approval, and outcome verification."
+  },
+  {
+    "slug": "2026-11-19-dnotitia-vdpu-vector-search-hardware",
+    "title": "Faster vector search hardware: measure the whole application, not just the chip",
+    "date": "2026-11-19",
+    "source": {
+      "title": "Dnotitia — First live demonstration of its VDPU vector search ASIC at SC26",
+      "url": "https://www.prnewswire.com/news-releases/dnotitia-presents-first-live-demonstration-of-its-vdpu-vector-search-asic-at-sc26-302945556.html"
+    },
+    "tags": [],
+    "cover": "posts/img/2026-11-19-vector-search-asic.jpg",
+    "summary": "Dnotitia demoed a vector-search ASIC searching 2.6 million video frames with far lower host CPU use. Retrieval speed and answer reliability need separate evaluation, and CPU savings aren't the same as total cost savings."
+  },
+  {
+    "slug": "2026-11-19-glean-shared-skills-mcp",
+    "title": "Shared agent skills are operational assets, and missing data is not a negative finding",
+    "date": "2026-11-19",
+    "source": {
+      "title": "Glean — November 19, 2026 release notes",
+      "url": "https://docs.glean.com/release-notes/releases/2026-11-19-november-release"
+    },
+    "tags": [],
+    "cover": "posts/img/2026-11-19-shared-skills-mcp.jpg",
+    "summary": "Glean now shares skills with MCP clients and adds event triggers. Reusable instructions need owners, versions, and tests, and agents must tell 'no data returned' apart from 'nothing scheduled'."
+  },
+  {
     "slug": "2026-11-18-digital-ai-release-agents-governed-delivery",
     "title": "Agents in the release pipeline: generating a change is not authorizing it",
     "date": "2026-11-18",
