@@ -1,5 +1,41 @@
 [
   {
+    "slug": "2026-11-20-inkling-2-mini-looped-model",
+    "title": "Inkling 2 Mini: efficiency matters when it improves dependable task completion",
+    "date": "2026-11-20",
+    "source": {
+      "title": "Thinking Machines Lab — Inkling 2 Mini",
+      "url": "https://thinkingmachines.ai/news/inkling-2-mini/"
+    },
+    "tags": [],
+    "cover": "posts/img/2026-11-20-inkling-2-mini.jpg",
+    "summary": "A 26.4B-parameter model that loops through shared layers and fits in about 20 GB. I'd compare it at equal compute budgets, treat instruction adherence as part of correctness, and verify behavior rather than trust explanations."
+  },
+  {
+    "slug": "2026-11-20-mcp-events-extension",
+    "title": "MCP Events: a notification is not authority to act",
+    "date": "2026-11-20",
+    "source": {
+      "title": "Model Context Protocol — Events extension (SEP-3415) registered",
+      "url": "https://github.com/modelcontextprotocol/modelcontextprotocol/pull/3568"
+    },
+    "tags": [],
+    "cover": "posts/img/2026-11-20-mcp-events.jpg",
+    "summary": "MCP's Events extension lets assistants react to changes via polling, push, or webhooks. Event-driven agents need application-enforced checks for relevance, permission, duplicates, current state, and recovery."
+  },
+  {
+    "slug": "2026-11-20-signal-device-ai-privacy-boundaries",
+    "title": "Device AI assistants and private conversations: access should match the task",
+    "date": "2026-11-20",
+    "source": {
+      "title": "Signal — Protecting your privacy",
+      "url": "https://signal.org/blog/protecting-your-privacy/"
+    },
+    "tags": [],
+    "cover": "posts/img/2026-11-20-device-ai-privacy.jpg",
+    "summary": "Signal added screenshot restrictions against device-level AI and asked for stronger OS controls. Permission to assist shouldn't mean broad device access, and consent has to account for everyone in a conversation."
+  },
+  {
     "slug": "2026-11-19-openai-performance-factory",
     "title": "OpenAI's Performance Factory: a merged fix is not a verified recovery",
     "date": "2026-11-19",
