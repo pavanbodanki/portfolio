@@ -135,15 +135,20 @@
                 <label for="email">Email</label>
                 <input type="email" id="email" name="email" autocomplete="email" required placeholder="you@example.com">
             </div>
-            <div class="field">
+            <div class="field" id="password-field">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" autocomplete="current-password" placeholder="Your editor password">
+            </div>
+            <div class="field" id="token-field" hidden>
                 <label for="token">Access key (GitHub token)</label>
-                <input type="password" id="token" name="password" autocomplete="current-password" required placeholder="github_pat_…">
-                <div class="hint">Needed once per device. It is kept only in this browser and sent only to GitHub.</div>
+                <input type="password" id="token" name="token" autocomplete="off" placeholder="github_pat_…">
+                <div class="hint">Kept only in this browser and sent only to GitHub.</div>
             </div>
             <label class="remember"><input type="checkbox" id="remember" checked> Keep me signed in on this device</label>
             <button class="btn solid" type="submit" id="login-btn" style="width:100%">Sign in</button>
             <div id="login-msg"></div>
-            <details class="help">
+            <p class="hint" style="text-align:center;margin-top:16px"><a href="#" id="toggle-mode">Use an access key instead</a></p>
+            <details class="help" id="token-help" hidden>
                 <summary>How do I get an access key?</summary>
                 <ol>
                     <li>Open <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub → New fine-grained token</a>.</li>
@@ -335,16 +340,45 @@
             return user;
         }
 
+        // ---- Password sign-in: editor-key.json holds the GitHub token encrypted with the editor password
+        //      (PBKDF2-SHA256 -> AES-256-GCM). Created by `node blog/tools/set-editor-password.mjs`.
+        const b64ToBytes = b64 => Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+        async function unlockToken(email, password) {
+            const res = await fetch('editor-key.json?ts=' + Date.now(), { cache: 'no-store' });
+            if (!res.ok) throw new Error('Password sign-in is not set up yet. Use an access key instead, or run the setup command.');
+            const k = await res.json();
+            if (email.trim().toLowerCase() !== String(k.email).toLowerCase()) throw new Error('Wrong email or password.');
+            const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey']);
+            const key = await crypto.subtle.deriveKey(
+                { name: 'PBKDF2', salt: b64ToBytes(k.salt), iterations: k.iterations, hash: 'SHA-256' },
+                base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+            try {
+                const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64ToBytes(k.iv) }, key, b64ToBytes(k.data));
+                return new TextDecoder().decode(plain);
+            } catch (e) { throw new Error('Wrong email or password.'); }
+        }
+
+        let tokenMode = false;
+        function setMode(useToken) {
+            tokenMode = useToken;
+            $('password-field').hidden = useToken; $('token-field').hidden = !useToken; $('token-help').hidden = !useToken;
+            $('toggle-mode').textContent = useToken ? 'Sign in with password instead' : 'Use an access key instead';
+            showMsg('login-msg');
+        }
+        $('toggle-mode').addEventListener('click', e => { e.preventDefault(); setMode(!tokenMode); });
+
         $('login-form').addEventListener('submit', async e => {
             e.preventDefault();
             const btn = $('login-btn'); btn.disabled = true; btn.textContent = 'Checking…';
             showMsg('login-msg');
             try {
-                const token = $('token').value.trim();
-                const user = await verify(token, $('email').value);
+                const email = $('email').value;
+                if (email.trim().toLowerCase() !== CONFIG.allowedEmail.toLowerCase()) throw new Error('Wrong email or password.');
+                const token = tokenMode ? $('token').value.trim() : await unlockToken(email, $('password').value);
+                const user = await verify(token, email);
                 TOKEN = token;
                 ($('remember').checked ? localStorage : sessionStorage).setItem(TOKEN_KEY, token);
-                $('token').value = '';
+                $('token').value = ''; $('password').value = '';
                 await enterApp(user);
             } catch (err) {
                 showMsg('login-msg', 'err', err.message);
