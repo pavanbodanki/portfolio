@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>AI Daily — Editor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+    <style>
+        :root {
+            --ink: #242424; --muted: #6b6b6b; --line: #f2f2f2; --line-2: #e6e6e6;
+            --accent: #0a66c2; --accent-dark: #004182; --danger: #c62828; --ok: #1b7f3b;
+            --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --serif: 'Source Serif 4', Charter, Georgia, serif;
+        }
+        * { box-sizing: border-box; }
+        body { margin: 0; background: #fafafa; color: var(--ink); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+        a { color: var(--accent); text-decoration: none; }
+        [hidden] { display: none !important; }
+
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 7px; border-radius: 999px; padding: 8px 18px;
+            font-size: 0.875rem; font-weight: 600; border: 1px solid var(--accent); color: var(--accent); background: #fff;
+            cursor: pointer; font-family: var(--sans); transition: background .15s;
+        }
+        .btn:hover { background: #eaf3fc; }
+        .btn.solid { background: var(--accent); color: #fff; }
+        .btn.solid:hover { background: var(--accent-dark); }
+        .btn.ghost { border-color: var(--line-2); color: var(--ink); }
+        .btn.ghost:hover { background: var(--line); }
+        .btn.danger { border-color: #f3c4c4; color: var(--danger); }
+        .btn.danger:hover { background: #fdecec; }
+        .btn:disabled { opacity: .55; cursor: not-allowed; }
+
+        label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--muted); margin: 0 0 6px; text-transform: uppercase; letter-spacing: .04em; }
+        input[type=text], input[type=email], input[type=password], input[type=date], input[type=url], textarea {
+            width: 100%; border: 1px solid var(--line-2); border-radius: 8px; padding: 10px 12px; font-size: 0.95rem;
+            font-family: var(--sans); background: #fff; color: var(--ink); outline: none;
+        }
+        input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(10,102,194,.12); }
+        .hint { font-size: 0.8rem; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+        .msg { padding: 10px 14px; border-radius: 8px; font-size: 0.875rem; margin: 14px 0 0; line-height: 1.5; }
+        .msg.err { background: #fdecec; color: var(--danger); }
+        .msg.ok { background: #e8f5ec; color: var(--ok); }
+        .msg.info { background: #eaf3fc; color: var(--accent-dark); }
+
+        /* ---------- Login ---------- */
+        .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+        .login-card { width: 100%; max-width: 420px; background: #fff; border: 1px solid var(--line-2); border-radius: 14px; padding: 36px 32px; box-shadow: 0 10px 40px rgba(0,0,0,.05); }
+        .logo { font-family: var(--serif); font-weight: 600; font-size: 1.7rem; letter-spacing: -0.03em; color: var(--ink); }
+        .logo span { color: var(--accent); }
+        .login-card h1 { font-size: 1.15rem; margin: 18px 0 4px; }
+        .login-card p.sub { color: var(--muted); font-size: 0.9rem; margin: 0 0 24px; }
+        .field { margin-bottom: 18px; }
+        .remember { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--muted); margin: 0 0 20px; }
+        details.help { margin-top: 18px; font-size: 0.85rem; color: var(--muted); }
+        details.help summary { cursor: pointer; color: var(--accent); }
+        details.help ol { padding-left: 1.2em; line-height: 1.6; }
+
+        /* ---------- App ---------- */
+        .topbar { position: sticky; top: 0; z-index: 20; background: #fff; border-bottom: 1px solid var(--line-2); }
+        .topbar-inner { max-width: 1400px; margin: 0 auto; padding: 0 20px; height: 56px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .topbar .who { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: var(--muted); }
+        .topbar .who img { width: 28px; height: 28px; border-radius: 50%; }
+        .shell { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 280px minmax(0, 1fr); min-height: calc(100vh - 56px); }
+        .sidebar { border-right: 1px solid var(--line-2); background: #fff; padding: 20px 16px; overflow-y: auto; max-height: calc(100vh - 56px); position: sticky; top: 56px; }
+        .sidebar .btn { width: 100%; margin-bottom: 18px; }
+        .post-item { display: block; padding: 10px 12px; border-radius: 8px; color: var(--ink); margin-bottom: 4px; cursor: pointer; border: 1px solid transparent; }
+        .post-item:hover { background: var(--line); }
+        .post-item.active { background: #eaf3fc; border-color: #cfe3f7; }
+        .post-item .t { font-size: 0.875rem; font-weight: 600; line-height: 1.35; }
+        .post-item .d { font-size: 0.75rem; color: var(--muted); margin-top: 3px; }
+        .side-h { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin: 6px 0 10px 4px; }
+
+        .main { padding: 24px 28px 80px; }
+        .main-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+        .main-head h2 { margin: 0; font-size: 1.3rem; }
+        .badge { display: inline-block; background: #eaf3fc; color: var(--accent); font-weight: 600; font-size: 0.75rem; padding: 3px 10px; border-radius: 999px; margin-left: 8px; vertical-align: middle; }
+        .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .grid3 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+        .card { background: #fff; border: 1px solid var(--line-2); border-radius: 12px; padding: 20px; margin-bottom: 18px; }
+
+        .cover-box { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+        .cover-preview { width: 200px; height: 112px; border-radius: 6px; background: linear-gradient(135deg, #0a66c2, #6d28d9); object-fit: cover; display: flex; align-items: center; justify-content: center; color: #fff; font-family: var(--serif); font-size: 2rem; }
+
+        .editor-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--line-2); border-radius: 12px; overflow: hidden; background: #fff; }
+        .pane-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; border-bottom: 1px solid var(--line-2); background: #fcfcfc; flex-wrap: wrap; }
+        .pane-head .title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+        .tools { display: flex; gap: 2px; flex-wrap: wrap; }
+        .tool { background: none; border: 1px solid transparent; border-radius: 6px; padding: 5px 8px; cursor: pointer; color: var(--ink); font-size: 0.85rem; font-family: var(--sans); }
+        .tool:hover { background: var(--line); border-color: var(--line-2); }
+        .tool.wide { font-weight: 600; color: var(--accent); }
+        #body { border: none; border-radius: 0; min-height: 620px; resize: vertical; font-family: 'SFMono-Regular', Menlo, monospace; font-size: 0.85rem; line-height: 1.6; padding: 16px; box-shadow: none; }
+        .preview { border-left: 1px solid var(--line-2); padding: 24px 28px; overflow-y: auto; max-height: 720px; }
+        .preview h1.pt { font-size: 1.8rem; line-height: 1.2; font-weight: 800; letter-spacing: -0.02em; margin: 0 0 10px; }
+        .preview .ps { font-size: 1.05rem; color: var(--muted); margin: 0 0 18px; line-height: 1.45; }
+        .prose { font-family: var(--serif); font-size: 1.1rem; line-height: 1.6; }
+        .prose p { margin: 0 0 1.3em; }
+        .prose h2 { font-family: var(--sans); font-size: 1.3rem; font-weight: 700; margin: 1.6em 0 .5em; }
+        .prose h3 { font-family: var(--sans); font-size: 1.1rem; font-weight: 700; margin: 1.4em 0 .4em; }
+        .prose a { color: inherit; text-decoration: underline; }
+        .prose blockquote { margin: 1.4em 0; padding-left: 18px; border-left: 3px solid var(--ink); font-style: italic; }
+        .prose ul, .prose ol { padding-left: 1.4em; }
+        .prose li { margin-bottom: .4em; }
+        .prose table { width: 100%; border-collapse: collapse; font-family: var(--sans); font-size: .9rem; margin: 1.2em 0; }
+        .prose th { text-align: left; border-bottom: 2px solid var(--ink); padding: 8px 10px 8px 0; }
+        .prose td { border-bottom: 1px solid var(--line-2); padding: 8px 10px 8px 0; vertical-align: top; }
+        .prose hr { border: none; border-top: 1px solid var(--line-2); margin: 2em 0; }
+        .prose img { max-width: 100%; }
+
+        .actions { position: sticky; bottom: 0; background: rgba(250,250,250,.95); backdrop-filter: blur(6px); border-top: 1px solid var(--line-2); padding: 14px 0; margin-top: 18px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .actions .spacer { flex: 1; }
+
+        @media (max-width: 1000px) {
+            .shell { grid-template-columns: 1fr; }
+            .sidebar { position: static; max-height: 260px; border-right: none; border-bottom: 1px solid var(--line-2); }
+            .editor-wrap, .grid2, .grid3 { grid-template-columns: 1fr; }
+            .preview { border-left: none; border-top: 1px solid var(--line-2); }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ================= LOGIN ================= -->
+    <section id="login" class="login-wrap" hidden>
+        <form class="login-card" id="login-form" autocomplete="on">
+            <div class="logo">AI Daily<span>.</span></div>
+            <h1>Editor sign in</h1>
+            <p class="sub">Only the blog owner can sign in here.</p>
+            <div class="field">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" autocomplete="email" required placeholder="you@example.com">
+            </div>
+            <div class="field">
+                <label for="token">Access key (GitHub token)</label>
+                <input type="password" id="token" name="password" autocomplete="current-password" required placeholder="github_pat_…">
+                <div class="hint">Needed once per device. It is kept only in this browser and sent only to GitHub.</div>
+            </div>
+            <label class="remember"><input type="checkbox" id="remember" checked> Keep me signed in on this device</label>
+            <button class="btn solid" type="submit" id="login-btn" style="width:100%">Sign in</button>
+            <div id="login-msg"></div>
+            <details class="help">
+                <summary>How do I get an access key?</summary>
+                <ol>
+                    <li>Open <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub → New fine-grained token</a>.</li>
+                    <li>Name it "AI Daily editor" and pick an expiration.</li>
+                    <li><b>Repository access:</b> Only select repositories → <b>portfolio</b>.</li>
+                    <li><b>Repository permissions:</b> Contents → <b>Read and write</b>.</li>
+                    <li><b>Account permissions:</b> Email addresses → <b>Read-only</b>.</li>
+                    <li>Generate, copy it, and paste it above.</li>
+                </ol>
+            </details>
+        </form>
+    </section>
+
+    <!-- ================= APP ================= -->
+    <section id="app" hidden>
+        <header class="topbar">
+            <div class="topbar-inner">
+                <div style="display:flex;align-items:center;gap:14px">
+                    <a href="./" class="logo" style="font-size:1.35rem">AI Daily<span>.</span></a>
+                    <span style="color:var(--muted);font-size:.85rem">Editor</span>
+                </div>
+                <div class="who">
+                    <img id="who-avatar" alt="">
+                    <span id="who-name"></span>
+                    <a class="btn ghost" href="./" target="_blank" rel="noopener"><i class="fas fa-up-right-from-square"></i> View blog</a>
+                    <button class="btn ghost" id="logout"><i class="fas fa-right-from-bracket"></i> Sign out</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="shell">
+            <aside class="sidebar">
+                <button class="btn solid" id="new-post"><i class="fas fa-plus"></i> New post</button>
+                <div class="side-h">Published posts</div>
+                <div id="post-list"><div class="hint">Loading…</div></div>
+            </aside>
+
+            <main class="main">
+                <div class="main-head">
+                    <h2 id="mode-title">New post <span class="badge" id="day-badge"></span></h2>
+                    <span class="hint" id="slug-hint"></span>
+                </div>
+
+                <div class="card">
+                    <div class="field">
+                        <label for="f-title">Title</label>
+                        <input type="text" id="f-title" placeholder="A clear, specific headline">
+                    </div>
+                    <div class="field">
+                        <label for="f-summary">One-line summary</label>
+                        <input type="text" id="f-summary" placeholder="Shown under the title and in the post list">
+                    </div>
+                    <div class="grid3">
+                        <div class="field">
+                            <label for="f-source-title">What I read (source title)</label>
+                            <input type="text" id="f-source-title" placeholder="e.g. Google Threat Intelligence Group — …">
+                        </div>
+                        <div class="field">
+                            <label for="f-date">Date</label>
+                            <input type="date" id="f-date">
+                        </div>
+                    </div>
+                    <div class="field" style="margin-bottom:0">
+                        <label for="f-source-url">Source link</label>
+                        <input type="url" id="f-source-url" placeholder="https://…">
+                    </div>
+                </div>
+
+                <div class="card">
+                    <label>Cover image (optional)</label>
+                    <div class="cover-box">
+                        <div id="cover-preview" class="cover-preview">A</div>
+                        <div>
+                            <input type="file" id="f-cover" accept="image/*" hidden>
+                            <button class="btn ghost" id="cover-pick"><i class="far fa-image"></i> Choose image</button>
+                            <button class="btn ghost" id="cover-remove" hidden><i class="fas fa-xmark"></i> Remove</button>
+                            <div class="hint">Resized to 1600px wide JPEG before upload. Without one, the post uses a gradient letter tile.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="editor-wrap">
+                    <div>
+                        <div class="pane-head">
+                            <span class="title">Write (Markdown)</span>
+                            <div class="tools">
+                                <button class="tool wide" data-act="autofmt" title="Turn pasted plain text into headings, paragraphs, bold questions and a source link"><i class="fas fa-wand-magic-sparkles"></i> Auto-format pasted text</button>
+                                <button class="tool" data-act="h2" title="Heading"><b>H</b></button>
+                                <button class="tool" data-act="bold" title="Bold"><i class="fas fa-bold"></i></button>
+                                <button class="tool" data-act="italic" title="Italic"><i class="fas fa-italic"></i></button>
+                                <button class="tool" data-act="quote" title="Quote"><i class="fas fa-quote-left"></i></button>
+                                <button class="tool" data-act="ul" title="Bullet list"><i class="fas fa-list-ul"></i></button>
+                                <button class="tool" data-act="ol" title="Numbered list"><i class="fas fa-list-ol"></i></button>
+                                <button class="tool" data-act="link" title="Link"><i class="fas fa-link"></i></button>
+                                <button class="tool" data-act="table" title="Table"><i class="fas fa-table"></i></button>
+                            </div>
+                        </div>
+                        <textarea id="body" spellcheck="true" placeholder="Paste your post here, then click “Auto-format pasted text”. You can edit the Markdown afterwards."></textarea>
+                    </div>
+                    <div class="preview">
+                        <div class="pane-head" style="margin:-24px -28px 18px;"><span class="title">Preview</span></div>
+                        <h1 class="pt" id="pv-title">Untitled</h1>
+                        <p class="ps" id="pv-summary"></p>
+                        <div class="prose" id="pv-body"></div>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button class="btn solid" id="publish"><i class="fas fa-paper-plane"></i> <span id="publish-label">Publish</span></button>
+                    <button class="btn danger" id="delete" hidden><i class="far fa-trash-can"></i> Delete post</button>
+                    <span class="spacer"></span>
+                    <span id="status" class="hint"></span>
+                </div>
+                <div id="action-msg"></div>
+            </main>
+        </div>
+    </section>
+
+    <script>
+        // ======================= CONFIG =======================
+        const CONFIG = {
+            owner: 'pavanbodanki',
+            repo: 'portfolio',
+            branch: 'main',
+            allowedEmail: 'pavanbodankicv@gmail.com', // the only email allowed to sign in
+            allowedLogin: 'pavanbodanki'               // the only GitHub account allowed to sign in
+        };
+        const TOKEN_KEY = 'aidaily_editor_token';
+
+        // ======================= HELPERS =======================
+        const $ = id => document.getElementById(id);
+        const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        const today = () => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 10); };
+        const slugify = s => s.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/['’]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 70).replace(/-+$/, '');
+        const utf8ToB64 = str => { const bytes = new TextEncoder().encode(str); let bin = ''; for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000)); return btoa(bin); };
+        const b64ToUtf8 = b64 => { const bin = atob(b64.replace(/\s/g, '')); const bytes = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i); return new TextDecoder().decode(bytes); };
+        const fmtDate = d => new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const showMsg = (el, kind, html) => { $(el).innerHTML = html ? `<div class="msg ${kind}">${html}</div>` : ''; };
+
+        let TOKEN = localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY) || '';
+        let POSTS = [];          // posts.json contents
+        let current = null;      // slug being edited, or null for new
+        let currentTags = [];
+        let currentCover = null; // existing cover path
+        let newCoverB64 = null;  // newly chosen image (base64 JPEG)
+        let removeCover = false;
+
+        async function gh(path, { method = 'GET', body, token = TOKEN } = {}) {
+            const res = await fetch('https://api.github.com' + path, {
+                method,
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    Accept: 'application/vnd.github+json',
+                    'X-GitHub-Api-Version': '2022-11-28',
+                    ...(body ? { 'Content-Type': 'application/json' } : {})
+                },
+                body: body ? JSON.stringify(body) : undefined,
+                cache: 'no-store'
+            });
+            if (!res.ok) {
+                let detail = '';
+                try { detail = (await res.json()).message || ''; } catch (e) { }
+                const err = new Error(`${res.status} ${detail}`.trim());
+                err.status = res.status;
+                throw err;
+            }
+            return res.status === 204 ? null : res.json();
+        }
+        const repoPath = p => `/repos/${CONFIG.owner}/${CONFIG.repo}${p}`;
+
+        // ======================= AUTH =======================
+        async function verify(token, email) {
+            if (email !== undefined && email.trim().toLowerCase() !== CONFIG.allowedEmail.toLowerCase())
+                throw new Error('This editor only accepts the blog owner’s email.');
+            let user;
+            try { user = await gh('/user', { token }); }
+            catch (e) { throw new Error('That access key was not accepted by GitHub. It may be wrong or expired.'); }
+            if (user.login.toLowerCase() !== CONFIG.allowedLogin.toLowerCase())
+                throw new Error('This access key belongs to a different GitHub account.');
+            let emails;
+            try { emails = await gh('/user/emails', { token }); }
+            catch (e) { throw new Error('The access key needs <b>Account permissions → Email addresses: Read-only</b>.'); }
+            if (!emails.some(e => e.verified && e.email.toLowerCase() === CONFIG.allowedEmail.toLowerCase()))
+                throw new Error(`The GitHub account does not have <b>${esc(CONFIG.allowedEmail)}</b> as a verified email.`);
+            const repo = await gh(repoPath(''), { token });
+            if (!repo.permissions || !repo.permissions.push)
+                throw new Error('The access key needs <b>Contents: Read and write</b> on the portfolio repository.');
+            return user;
+        }
+
+        $('login-form').addEventListener('submit', async e => {
+            e.preventDefault();
+            const btn = $('login-btn'); btn.disabled = true; btn.textContent = 'Checking…';
+            showMsg('login-msg');
+            try {
+                const token = $('token').value.trim();
+                const user = await verify(token, $('email').value);
+                TOKEN = token;
+                ($('remember').checked ? localStorage : sessionStorage).setItem(TOKEN_KEY, token);
+                $('token').value = '';
+                await enterApp(user);
+            } catch (err) {
+                showMsg('login-msg', 'err', err.message);
+            } finally { btn.disabled = false; btn.textContent = 'Sign in'; }
+        });
+
+        $('logout').addEventListener('click', () => {
+            localStorage.removeItem(TOKEN_KEY); sessionStorage.removeItem(TOKEN_KEY); TOKEN = '';
+            $('app').hidden = true; $('login').hidden = false;
+        });
+
+        async function enterApp(user) {
+            $('login').hidden = true; $('app').hidden = false;
+            $('who-avatar').src = user.avatar_url; $('who-name').textContent = user.name || user.login;
+            await loadPosts();
+            newPost();
+        }
+
+        // ======================= DATA =======================
+        async function readFile(path, ref = CONFIG.branch) {
+            const f = await gh(repoPath(`/contents/${path}?ref=${encodeURIComponent(ref)}`));
+            return b64ToUtf8(f.content);
+        }
+
+        async function loadPosts() {
+            POSTS = JSON.parse(await readFile('blog/posts.json'));
+            renderList();
+        }
+
+        function startDate() { return POSTS.reduce((m, p) => (!m || p.date < m ? p.date : m), null); }
+        function dayFor(date) {
+            const s = startDate() && startDate() < date ? startDate() : (startDate() || date);
+            return Math.round((new Date(date + 'T00:00:00') - new Date(s + 'T00:00:00')) / 86400000) + 1;
+        }
+
+        function renderList() {
+            const sorted = [...POSTS].sort((a, b) => b.date.localeCompare(a.date));
+            $('post-list').innerHTML = sorted.map(p => `
+                <div class="post-item ${p.slug === current ? 'active' : ''}" data-slug="${esc(p.slug)}">
+                    <div class="t">${esc(p.title)}</div>
+                    <div class="d">Day ${dayFor(p.date)} · ${fmtDate(p.date)}</div>
+                </div>`).join('') || '<div class="hint">No posts yet.</div>';
+            document.querySelectorAll('.post-item').forEach(el => el.addEventListener('click', () => editPost(el.dataset.slug)));
+        }
+
+        // ======================= FORM =======================
+        function setCoverPreview(src) {
+            const box = $('cover-preview');
+            if (src) box.outerHTML = `<img id="cover-preview" class="cover-preview" src="${esc(src)}" alt="">`;
+            else box.outerHTML = `<div id="cover-preview" class="cover-preview">${esc(($('f-title').value || 'A')[0].toUpperCase())}</div>`;
+            $('cover-remove').hidden = !src;
+        }
+
+        function fillForm(p = {}, body = '') {
+            $('f-title').value = p.title || '';
+            $('f-summary').value = p.summary || '';
+            $('f-source-title').value = p.source?.title || '';
+            $('f-source-url').value = p.source?.url || '';
+            $('f-date').value = p.date || today();
+            $('body').value = body;
+            currentTags = p.tags || [];
+            currentCover = p.cover || null;
+            newCoverB64 = null; removeCover = false; $('f-cover').value = '';
+            setCoverPreview(currentCover);
+            showMsg('action-msg'); $('status').textContent = '';
+            refresh();
+        }
+
+        function newPost() {
+            current = null;
+            $('mode-title').firstChild.textContent = 'New post ';
+            $('publish-label').textContent = 'Publish';
+            $('delete').hidden = true;
+            fillForm({}, '');
+            renderList();
+        }
+
+        async function editPost(slug) {
+            const p = POSTS.find(x => x.slug === slug);
+            if (!p) return;
+            current = slug;
+            $('mode-title').firstChild.textContent = 'Edit post ';
+            $('publish-label').textContent = 'Save changes';
+            $('delete').hidden = false;
+            renderList();
+            $('status').textContent = 'Loading…';
+            try { fillForm(p, await readFile(`blog/posts/${slug}.md`)); }
+            catch (e) { fillForm(p, ''); showMsg('action-msg', 'err', 'Could not load this post: ' + esc(e.message)); }
+        }
+
+        function computeSlug() {
+            if (current) return current;
+            const base = `${$('f-date').value || today()}-${slugify($('f-title').value) || 'post'}`;
+            let s = base, i = 2;
+            while (POSTS.some(p => p.slug === s)) s = `${base}-${i++}`;
+            return s;
+        }
+
+        function refresh() {
+            const date = $('f-date').value || today();
+            $('day-badge').textContent = `Day ${dayFor(date)}`;
+            $('slug-hint').textContent = current ? `Editing: ${current}` : `Will be saved as: ${computeSlug()}`;
+            $('pv-title').textContent = $('f-title').value || 'Untitled';
+            $('pv-summary').textContent = $('f-summary').value;
+            $('pv-body').innerHTML = DOMPurify.sanitize(marked.parse($('body').value || ''));
+            if (!currentCover && !newCoverB64 && $('cover-preview').tagName === 'DIV')
+                $('cover-preview').textContent = ($('f-title').value || 'A')[0].toUpperCase();
+        }
+        ['f-title', 'f-summary', 'f-date', 'body'].forEach(id => $(id).addEventListener('input', refresh));
+        $('new-post').addEventListener('click', newPost);
+
+        // ======================= COVER =======================
+        $('cover-pick').addEventListener('click', e => { e.preventDefault(); $('f-cover').click(); });
+        $('cover-remove').addEventListener('click', e => {
+            e.preventDefault(); newCoverB64 = null; removeCover = !!currentCover; currentCover = null; $('f-cover').value = ''; setCoverPreview(null);
+        });
+        $('f-cover').addEventListener('change', async () => {
+            const file = $('f-cover').files[0];
+            if (!file) return;
+            const img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(file); });
+            const scale = Math.min(1, 1600 / img.width);
+            const c = document.createElement('canvas');
+            c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
+            c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+            const dataUrl = c.toDataURL('image/jpeg', 0.82);
+            newCoverB64 = dataUrl.split(',')[1]; removeCover = false;
+            setCoverPreview(dataUrl);
+        });
+
+        // ======================= EDITOR TOOLS =======================
+        function wrapSel(before, after = before, placeholder = 'text') {
+            const ta = $('body'); const { selectionStart: s, selectionEnd: e, value: v } = ta;
+            const sel = v.slice(s, e) || placeholder;
+            ta.setRangeText(before + sel + after, s, e, 'end'); ta.focus(); refresh();
+        }
+        function prefixLines(prefixFn) {
+            const ta = $('body'); const v = ta.value;
+            const s = v.lastIndexOf('\n', ta.selectionStart - 1) + 1;
+            let e = v.indexOf('\n', ta.selectionEnd); if (e === -1) e = v.length;
+            const lines = v.slice(s, e).split('\n').map((l, i) => prefixFn(i) + l.replace(/^(#{1,6} |> |- |\d+\. )/, ''));
+            ta.setRangeText(lines.join('\n'), s, e, 'end'); ta.focus(); refresh();
+        }
+
+        // Turn pasted plain text into Markdown, following the format used on AI Daily.
+        function autoFormat(text) {
+            const lines = text.replace(/\r/g, '').split('\n').map(l => l.trim()).filter(Boolean);
+            const out = []; const sources = [];
+            const linkOnly = /^(\[[^\]]+\]\([^)]+\)\s*(·|\||,)?\s*)+$/;
+            for (const line of lines) {
+                if (/^(source|sources):/i.test(line) || linkOnly.test(line)) { sources.push(line.replace(/^(source|sources):\s*/i, '')); continue; }
+                if (/^(#{1,6} |[-*] |\d+\. |> |\|)/.test(line)) { out.push(line); continue; }        // already Markdown
+                const q = line.match(/^([^.?!]{6,120}\?)\s+(.+)$/);                                    // "Question? Answer…"
+                if (q) { out.push(`- **${q[1]}** ${q[2]}`); continue; }
+                const isHeading = line.length <= 110 && !/[.!,;:"”)]$/.test(line) && /^[A-Z0-9"“‘']/.test(line) && line.split(' ').length <= 16;
+                if (isHeading) { out.push(`## ${line}`); continue; }
+                out.push(line);
+            }
+            // join: keep consecutive list items together, blank lines elsewhere
+            let md = '';
+            out.forEach((l, i) => {
+                const prev = out[i - 1];
+                const bothList = prev && /^[-*] |^\d+\. /.test(prev) && /^[-*] |^\d+\. /.test(l);
+                md += (i === 0 ? '' : bothList ? '\n' : '\n\n') + l;
+            });
+            if (sources.length) md += `\n\n---\n\n**Source${sources.length > 1 || /·/.test(sources[0]) ? 's' : ''}:** ${sources.join(' · ')}`;
+            // Fill empty source fields from the first link
+            const m = sources.join(' ').match(/\[([^\]]+)\]\(([^)]+)\)/);
+            if (m && !$('f-source-url').value) $('f-source-url').value = m[2];
+            return md + '\n';
+        }
+
+        document.querySelectorAll('.tool').forEach(b => b.addEventListener('click', e => {
+            e.preventDefault();
+            const act = b.dataset.act;
+            if (act === 'autofmt') {
+                const ta = $('body');
+                if (!ta.value.trim()) { showMsg('action-msg', 'info', 'Paste your post into the editor first.'); return; }
+                ta.value = autoFormat(ta.value); refresh();
+                showMsg('action-msg', 'info', 'Formatted. Check the preview: short lines became headings, “Question? answer” lines became bold questions, and link lines moved to a Source line at the end.');
+            }
+            if (act === 'h2') prefixLines(() => '## ');
+            if (act === 'bold') wrapSel('**');
+            if (act === 'italic') wrapSel('*');
+            if (act === 'quote') prefixLines(() => '> ');
+            if (act === 'ul') prefixLines(() => '- ');
+            if (act === 'ol') prefixLines(i => `${i + 1}. `);
+            if (act === 'link') { const url = prompt('Link URL', 'https://'); if (url) wrapSel('[', `](${url})`, 'link text'); }
+            if (act === 'table') wrapSel('\n| Column 1 | Column 2 |\n|---|---|\n| ', ' | |\n', 'Cell');
+        }));
+
+        // ======================= COMMIT =======================
+        // Writes all changed files in ONE commit (one site deploy).
+        async function commitFiles(files, message) {
+            const ref = await gh(repoPath(`/git/ref/heads/${CONFIG.branch}`));
+            const headSha = ref.object.sha;
+            const head = await gh(repoPath(`/git/commits/${headSha}`));
+            const tree = [];
+            for (const f of files) {
+                if (f.delete) { tree.push({ path: f.path, mode: '100644', type: 'blob', sha: null }); continue; }
+                const blob = await gh(repoPath('/git/blobs'), { method: 'POST', body: { content: f.b64, encoding: 'base64' } });
+                tree.push({ path: f.path, mode: '100644', type: 'blob', sha: blob.sha });
+            }
+            const newTree = await gh(repoPath('/git/trees'), { method: 'POST', body: { base_tree: head.tree.sha, tree } });
+            const commit = await gh(repoPath('/git/commits'), { method: 'POST', body: { message, tree: newTree.sha, parents: [headSha] } });
+            await gh(repoPath(`/git/refs/heads/${CONFIG.branch}`), { method: 'PATCH', body: { sha: commit.sha, force: false } });
+            return commit.sha;
+        }
+
+        function busy(on, label) {
+            $('publish').disabled = on; $('delete').disabled = on; $('new-post').disabled = on;
+            $('status').textContent = on ? label : '';
+        }
+
+        $('publish').addEventListener('click', async () => {
+            showMsg('action-msg');
+            const title = $('f-title').value.trim(), body = $('body').value.trim(), date = $('f-date').value;
+            if (!title) return showMsg('action-msg', 'err', 'Add a title.');
+            if (!date) return showMsg('action-msg', 'err', 'Pick a date.');
+            if (!body) return showMsg('action-msg', 'err', 'Write or paste the post body.');
+            busy(true, current ? 'Saving…' : 'Publishing…');
+            try {
+                // Re-read the latest posts.json so nothing published elsewhere is lost.
+                POSTS = JSON.parse(await readFile('blog/posts.json'));
+                const slug = computeSlug();
+                const entry = {
+                    slug, title, date,
+                    source: { title: $('f-source-title').value.trim(), url: $('f-source-url').value.trim() },
+                    tags: currentTags,
+                    summary: $('f-summary').value.trim()
+                };
+                const files = [{ path: `blog/posts/${slug}.md`, b64: utf8ToB64(body + '\n') }];
+                if (newCoverB64) {
+                    entry.cover = `posts/img/${slug}.jpg`;
+                    files.push({ path: `blog/${entry.cover}`, b64: newCoverB64 });
+                } else if (currentCover && !removeCover) {
+                    entry.cover = currentCover;
+                }
+                const idx = POSTS.findIndex(p => p.slug === slug);
+                if (idx >= 0) POSTS[idx] = entry;
+                else {
+                    // Newest day first; within the same day, keep publishing order.
+                    let at = POSTS.findIndex(p => p.date < date);
+                    if (at === -1) at = POSTS.length;
+                    POSTS.splice(at, 0, entry);
+                }
+                files.push({ path: 'blog/posts.json', b64: utf8ToB64(JSON.stringify(POSTS, null, 2) + '\n') });
+                await commitFiles(files, `${current ? 'AI Daily: update' : 'AI Daily'} — ${title}`);
+                const wasNew = !current;
+                current = slug; currentCover = entry.cover || null; newCoverB64 = null; removeCover = false;
+                $('mode-title').firstChild.textContent = 'Edit post ';
+                $('publish-label').textContent = 'Save changes'; $('delete').hidden = false;
+                renderList(); refresh();
+                showMsg('action-msg', 'ok', `${wasNew ? 'Published' : 'Saved'}! The site updates in about 1–2 minutes: <a href="./?post=${encodeURIComponent(slug)}" target="_blank" rel="noopener">open the post</a>.`);
+            } catch (err) {
+                showMsg('action-msg', 'err', 'Could not publish: ' + esc(err.message) + (err.status === 422 ? ' — the blog changed while you were editing; click Publish again.' : ''));
+            } finally { busy(false); }
+        });
+
+        $('delete').addEventListener('click', async () => {
+            if (!current) return;
+            const p = POSTS.find(x => x.slug === current);
+            if (!confirm(`Delete “${p?.title}”? It will be removed from the blog. (It stays recoverable in the GitHub history.)`)) return;
+            busy(true, 'Deleting…');
+            try {
+                POSTS = JSON.parse(await readFile('blog/posts.json'));
+                const target = POSTS.find(x => x.slug === current);
+                POSTS = POSTS.filter(x => x.slug !== current);
+                const files = [
+                    { path: `blog/posts/${current}.md`, delete: true },
+                    { path: 'blog/posts.json', b64: utf8ToB64(JSON.stringify(POSTS, null, 2) + '\n') }
+                ];
+                if (target?.cover) files.push({ path: `blog/${target.cover}`, delete: true });
+                await commitFiles(files, `AI Daily: delete — ${target?.title || current}`);
+                newPost();
+                showMsg('action-msg', 'ok', 'Deleted. The site updates in about 1–2 minutes.');
+            } catch (err) {
+                showMsg('action-msg', 'err', 'Could not delete: ' + esc(err.message));
+            } finally { busy(false); }
+        });
+
+        // ======================= START =======================
+        (async function start() {
+            if (TOKEN) {
+                try { return await enterApp(await verify(TOKEN)); }
+                catch (e) { localStorage.removeItem(TOKEN_KEY); sessionStorage.removeItem(TOKEN_KEY); TOKEN = ''; showMsg('login-msg', 'err', 'Please sign in again. ' + e.message); }
+            }
+            $('login').hidden = false;
+        })();
+    </script>
+</body>
+
+</html>
