@@ -149,8 +149,7 @@
                     <li>Open <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub → New fine-grained token</a>.</li>
                     <li>Name it "AI Daily editor" and pick an expiration.</li>
                     <li><b>Repository access:</b> Only select repositories → <b>portfolio</b>.</li>
-                    <li><b>Repository permissions:</b> Contents → <b>Read and write</b>.</li>
-                    <li><b>Account permissions:</b> Email addresses → <b>Read-only</b>.</li>
+                    <li><b>Permissions → Repositories → Add permissions:</b> Contents → <b>Read and write</b>.</li>
                     <li>Generate, copy it, and paste it above.</li>
                 </ol>
             </details>
@@ -325,15 +324,12 @@
                 throw new Error('This editor only accepts the blog owner’s email.');
             let user;
             try { user = await gh('/user', { token }); }
-            catch (e) { throw new Error('That access key was not accepted by GitHub. It may be wrong or expired.'); }
+            catch (e) { throw new Error(`That access key was not accepted by GitHub (${esc(e.message)}). It may be wrong or expired.`); }
             if (user.login.toLowerCase() !== CONFIG.allowedLogin.toLowerCase())
                 throw new Error('This access key belongs to a different GitHub account.');
-            let emails;
-            try { emails = await gh('/user/emails', { token }); }
-            catch (e) { throw new Error('The access key needs <b>Account permissions → Email addresses: Read-only</b>.'); }
-            if (!emails.some(e => e.verified && e.email.toLowerCase() === CONFIG.allowedEmail.toLowerCase()))
-                throw new Error(`The GitHub account does not have <b>${esc(CONFIG.allowedEmail)}</b> as a verified email.`);
-            const repo = await gh(repoPath(''), { token });
+            let repo;
+            try { repo = await gh(repoPath(''), { token }); }
+            catch (e) { throw new Error(`The access key can’t see the portfolio repository (${esc(e.message)}). Under <b>Repository access</b>, choose <b>Only select repositories → portfolio</b>.`); }
             if (!repo.permissions || !repo.permissions.push)
                 throw new Error('The access key needs <b>Contents: Read and write</b> on the portfolio repository.');
             return user;
