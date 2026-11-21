@@ -221,6 +221,7 @@
                             <button class="btn ghost" id="cover-pick"><i class="far fa-image"></i> Choose image</button>
                             <button class="btn ghost" id="cover-remove" hidden><i class="fas fa-xmark"></i> Remove</button>
                             <div class="hint">Resized to 1600px wide JPEG before upload. Without one, the post uses a gradient letter tile.</div>
+                            <input type="text" id="f-caption" placeholder="Caption (optional), e.g. “Image: OpenAI” or “Illustration generated for this post”" style="margin-top:10px;max-width:520px">
                         </div>
                     </div>
                 </div>
@@ -272,6 +273,10 @@
             allowedLogin: 'pavanbodanki'               // the only GitHub account allowed to sign in
         };
         const TOKEN_KEY = 'aidaily_editor_token';
+        // The API address can be overridden ONLY when running on localhost (for testing against a fake GitHub).
+        // On the live site, requests always go to api.github.com.
+        const IS_LOCAL = ['localhost', '127.0.0.1'].includes(location.hostname);
+        const API = (IS_LOCAL && new URLSearchParams(location.search).get('api')) || 'https://api.github.com';
 
         // ======================= HELPERS =======================
         const $ = id => document.getElementById(id);
@@ -292,7 +297,7 @@
         let removeCover = false;
 
         async function gh(path, { method = 'GET', body, token = TOKEN } = {}) {
-            const res = await fetch('https://api.github.com' + path, {
+            const res = await fetch(API + path, {
                 method,
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -403,6 +408,7 @@
             $('f-source-title').value = p.source?.title || '';
             $('f-source-url').value = p.source?.url || '';
             $('f-date').value = p.date || today();
+            $('f-caption').value = p.coverCaption || '';
             $('body').value = body;
             currentTags = p.tags || [];
             currentCover = p.cover || null;
@@ -581,6 +587,8 @@
                 } else if (currentCover && !removeCover) {
                     entry.cover = currentCover;
                 }
+                const caption = $('f-caption').value.trim();
+                if (entry.cover && caption) entry.coverCaption = caption;
                 const idx = POSTS.findIndex(p => p.slug === slug);
                 if (idx >= 0) POSTS[idx] = entry;
                 else {
@@ -636,3 +644,4 @@
 </body>
 
 </html>
+

@@ -380,7 +380,7 @@
                     </div>
                 </div>
                 ${actionbar}
-                ${p.cover ? `<figure class="hero"><img src="${esc(p.cover)}" alt="${esc(p.title)}"><figcaption>Illustration generated for this post</figcaption></figure>` : ''}
+                ${p.cover ? `<figure class="hero"><img src="${esc(p.cover)}" alt="${esc(p.title)}">${p.coverCaption ? `<figcaption>${esc(p.coverCaption)}</figcaption>` : ''}</figure>` : ''}
                 ${p.source?.title ? `<div class="source-note"><b>What I read:</b> ${p.source.url
                     ? `<a href="${esc(p.source.url)}" target="_blank" rel="noopener">${esc(p.source.title)}</a>`
                     : esc(p.source.title)}</div>` : ''}

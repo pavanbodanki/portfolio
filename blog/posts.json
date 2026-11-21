@@ -9,7 +9,8 @@
     },
     "tags": [],
     "cover": "posts/img/2026-11-20-inkling-2-mini.jpg",
-    "summary": "A 26.4B-parameter model that loops through shared layers and fits in about 20 GB. I'd compare it at equal compute budgets, treat instruction adherence as part of correctness, and verify behavior rather than trust explanations."
+    "summary": "A 26.4B-parameter model that loops through shared layers and fits in about 20 GB. I'd compare it at equal compute budgets, treat instruction adherence as part of correctness, and verify behavior rather than trust explanations.",
+    "coverCaption": "Illustration generated for this post"
   },
   {
     "slug": "2026-11-20-mcp-events-extension",
@@ -21,7 +22,8 @@
     },
     "tags": [],
     "cover": "posts/img/2026-11-20-mcp-events.jpg",
-    "summary": "MCP's Events extension lets assistants react to changes via polling, push, or webhooks. Event-driven agents need application-enforced checks for relevance, permission, duplicates, current state, and recovery."
+    "summary": "MCP's Events extension lets assistants react to changes via polling, push, or webhooks. Event-driven agents need application-enforced checks for relevance, permission, duplicates, current state, and recovery.",
+    "coverCaption": "Illustration generated for this post"
   },
   {
     "slug": "2026-11-20-signal-device-ai-privacy-boundaries",
@@ -33,7 +35,8 @@
     },
     "tags": [],
     "cover": "posts/img/2026-11-20-device-ai-privacy.jpg",
-    "summary": "Signal added screenshot restrictions against device-level AI and asked for stronger OS controls. Permission to assist shouldn't mean broad device access, and consent has to account for everyone in a conversation."
+    "summary": "Signal added screenshot restrictions against device-level AI and asked for stronger OS controls. Permission to assist shouldn't mean broad device access, and consent has to account for everyone in a conversation.",
+    "coverCaption": "Illustration generated for this post"
   },
   {
     "slug": "2026-11-19-openai-performance-factory",
@@ -45,7 +48,8 @@
     },
     "tags": [],
     "cover": "posts/img/2026-11-19-performance-factory.jpg",
-    "summary": "OpenAI's agents investigate performance alerts, challenge diagnoses, and verify recovery. What makes it useful is the separation between investigation, challenge, approval, and outcome verification."
+    "summary": "OpenAI's agents investigate performance alerts, challenge diagnoses, and verify recovery. What makes it useful is the separation between investigation, challenge, approval, and outcome verification.",
+    "coverCaption": "Illustration generated for this post"
   },
   {
     "slug": "2026-11-19-dnotitia-vdpu-vector-search-hardware",
@@ -57,7 +61,8 @@
     },
     "tags": [],
     "cover": "posts/img/2026-11-19-vector-search-asic.jpg",
-    "summary": "Dnotitia demoed a vector-search ASIC searching 2.6 million video frames with far lower host CPU use. Retrieval speed and answer reliability need separate evaluation, and CPU savings aren't the same as total cost savings."
+    "summary": "Dnotitia demoed a vector-search ASIC searching 2.6 million video frames with far lower host CPU use. Retrieval speed and answer reliability need separate evaluation, and CPU savings aren't the same as total cost savings.",
+    "coverCaption": "Illustration generated for this post"
   },
   {
     "slug": "2026-11-19-glean-shared-skills-mcp",
@@ -69,7 +74,8 @@
     },
     "tags": [],
     "cover": "posts/img/2026-11-19-shared-skills-mcp.jpg",
-    "summary": "Glean now shares skills with MCP clients and adds event triggers. Reusable instructions need owners, versions, and tests, and agents must tell 'no data returned' apart from 'nothing scheduled'."
+    "summary": "Glean now shares skills with MCP clients and adds event triggers. Reusable instructions need owners, versions, and tests, and agents must tell 'no data returned' apart from 'nothing scheduled'.",
+    "coverCaption": "Illustration generated for this post"
   },
   {
     "slug": "2026-11-18-digital-ai-release-agents-governed-delivery",
