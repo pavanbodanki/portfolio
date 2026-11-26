@@ -1,5 +1,17 @@
 [
   {
+    "slug": "2026-11-24-a-rag-system-should-ask-whether-its-evidence-is-enough",
+    "title": "A RAG system should ask whether its evidence is enough",
+    "date": "2026-11-24",
+    "source": {
+      "title": "",
+      "url": ""
+    },
+    "tags": [],
+    "summary": "",
+    "cover": "posts/img/2026-11-24-a-rag-system-should-ask-whether-its-evidence-is-enough.jpg"
+  },
+  {
     "slug": "2026-11-23-graphrag-should-be-tested-on-the-evidence-it-actually-needs",
     "title": "GraphRAG should be tested on the evidence it actually needs",
     "date": "2026-11-23",
