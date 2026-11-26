@@ -1,5 +1,17 @@
 [
   {
+    "slug": "2026-11-21-reusing-computation-gives-language-models-another-way-to-work",
+    "title": "Reusing computation gives language models another way to work",
+    "date": "2026-11-21",
+    "source": {
+      "title": "",
+      "url": "https://github.com/huggingface/transformers/releases/tag/v5.24.0"
+    },
+    "tags": [],
+    "summary": "",
+    "cover": "posts/img/2026-11-21-reusing-computation-gives-language-models-another-way-to-work.jpg"
+  },
+  {
     "slug": "2026-11-20-inkling-2-mini-looped-model",
     "title": "Inkling 2 Mini: efficiency matters when it improves dependable task completion",
     "date": "2026-11-20",
