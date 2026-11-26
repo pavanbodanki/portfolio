@@ -12,6 +12,18 @@
     "cover": "posts/img/2026-11-23-graphrag-should-be-tested-on-the-evidence-it-actually-needs.jpg"
   },
   {
+    "slug": "2026-11-23-model-carving-lets-training-shape-the-transformer",
+    "title": "Model Carving lets training shape the Transformer",
+    "date": "2026-11-23",
+    "source": {
+      "title": "",
+      "url": ""
+    },
+    "tags": [],
+    "summary": "",
+    "cover": "posts/img/2026-11-23-model-carving-lets-training-shape-the-transformer.jpg"
+  },
+  {
     "slug": "2026-11-22-a-stronger-agent-model-still-needs-evaluation-in-its-own-workflow",
     "title": "A stronger agent model still needs evaluation in its own workflow",
     "date": "2026-11-22",
