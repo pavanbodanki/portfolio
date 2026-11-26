@@ -1,5 +1,17 @@
 [
   {
+    "slug": "2026-11-23-graphrag-should-be-tested-on-the-evidence-it-actually-needs",
+    "title": "GraphRAG should be tested on the evidence it actually needs",
+    "date": "2026-11-23",
+    "source": {
+      "title": "",
+      "url": "https://arxiv.org/abs/2611.27350"
+    },
+    "tags": [],
+    "summary": "",
+    "cover": "posts/img/2026-11-23-graphrag-should-be-tested-on-the-evidence-it-actually-needs.jpg"
+  },
+  {
     "slug": "2026-11-22-a-stronger-agent-model-still-needs-evaluation-in-its-own-workflow",
     "title": "A stronger agent model still needs evaluation in its own workflow",
     "date": "2026-11-22",
