@@ -1,5 +1,17 @@
 [
   {
+    "slug": "2026-11-22-a-stronger-agent-model-still-needs-evaluation-in-its-own-workflow",
+    "title": "A stronger agent model still needs evaluation in its own workflow",
+    "date": "2026-11-22",
+    "source": {
+      "title": "",
+      "url": "https://www.sarvam.ai/blogs/sarvam-105b-1711"
+    },
+    "tags": [],
+    "summary": "",
+    "cover": "posts/img/2026-11-22-a-stronger-agent-model-still-needs-evaluation-in-its-own-workflow.jpg"
+  },
+  {
     "slug": "2026-11-21-reusing-computation-gives-language-models-another-way-to-work",
     "title": "Reusing computation gives language models another way to work",
     "date": "2026-11-21",
